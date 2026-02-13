@@ -1,0 +1,28 @@
+@import 'tailwindcss';
+
+body {
+    background-color: #1c1c1c;
+}
+
+button {
+    cursor: pointer;
+}
+
+.bidImage {
+
+    -webkit-mask-image: linear-gradient(to left,
+            transparent 0%,
+            white 20%,
+            white 80%,
+            transparent 100%);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: cover;
+
+    mask-image: linear-gradient(to right,
+            transparent 0%,
+            white 20%,
+            white 80%,
+            transparent 100%);
+    mask-repeat: no-repeat;
+    mask-size: cover;
+}
