@@ -64,7 +64,7 @@ function App() {
       {/* Main content */}
       <div className="flex-1">
         <Routes>
-          <Route path="/" element={<Home user={user} />} />
+          <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Home user={user} />} />
           <Route
             path="/login"
             element={user ? <Navigate to="/dashboard" /> : <Login setUser={setUser} />}
