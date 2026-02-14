@@ -139,9 +139,6 @@ router.post(
     }
 );
 
-
-
-
 // Get all items (marketplace)
 router.get("/items", async (req: Request, res: Response) => {
     try {

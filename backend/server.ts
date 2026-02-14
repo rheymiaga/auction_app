@@ -54,6 +54,7 @@ app.use(
     )
 );
 
+
 app.use("/api/auth", authRoutes);
 
 // ======================= ERROR HANDLING =======================
