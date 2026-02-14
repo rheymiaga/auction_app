@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_URL } from "../../../api";
 
 interface MyOffer {
     id: number;
@@ -14,7 +15,7 @@ export const MyOffers = () => {
 
     useEffect(() => {
         axios
-            .get("/api/auth/my-offers", { withCredentials: true })
+            .get(`${API_URL}/api/auth/my-offers`, { withCredentials: true })
             .then((res) => setOffers(res.data))
             .catch((err) => console.error("Error fetching my offers:", err));
     }, []);

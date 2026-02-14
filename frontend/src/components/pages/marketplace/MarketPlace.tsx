@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_URL } from "../../../api";
 
 interface Item {
     id: number;
@@ -22,7 +23,7 @@ export default function Marketplace() {
 
     useEffect(() => {
         axios
-            .get("/api/auth/items", { withCredentials: true })
+            .get(`${API_URL}/api/auth/items`, { withCredentials: true })
             .then((res) => {
                 const now = new Date();
                 const filtered = res.data.filter((item: Item) => {
@@ -62,7 +63,7 @@ export default function Marketplace() {
         }
         try {
             const res = await axios.post(
-                `/api/auth/items/${itemId}/offers`,
+                `${API_URL}/api/auth/items/${itemId}/offers`,
                 { offer_price: offerPrice },
                 { withCredentials: true }
             );

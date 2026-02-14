@@ -9,6 +9,7 @@ import { Dashboard } from "./components/pages/dashboard/Dashboard";
 import { ItemForm } from "./components/pages/items/ItemForm";
 import Marketplace from "./components/pages/marketplace/MarketPlace";
 import { MyOffers } from "./components/pages/offers/MyOffers";
+import { API_URL } from "./api";
 
 interface User {
   id: string;
@@ -17,7 +18,6 @@ interface User {
 }
 
 // Configure axios
-axios.defaults.baseURL = "http://localhost:4000";
 axios.defaults.withCredentials = true;
 
 function App() {
@@ -28,7 +28,7 @@ function App() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get("/api/auth/me");
+        const res = await axios.get(`${API_URL}/api/auth/me`);
         setUser(res.data);
       } catch {
         setUser(null);

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_URL } from "../../../api";
 
 interface Item {
     id: number;
@@ -29,7 +30,7 @@ export const Dashboard = () => {
     useEffect(() => {
         const fetchDashboard = async () => {
             try {
-                const res = await axios.get("/api/auth/dashboard", { withCredentials: true });
+                const res = await axios.get(`${API_URL}/api/auth/dashboard`, { withCredentials: true });
                 setItems(res.data.items);
                 const soldCount = res.data.items.filter((i: Item) => i.status === true).length;
                 setSoldItems(soldCount);
@@ -43,7 +44,7 @@ export const Dashboard = () => {
 
     const viewOffers = async (itemId: number) => {
         try {
-            const res = await axios.get(`/api/auth/items/${itemId}/offers`, { withCredentials: true });
+            const res = await axios.get(`${API_URL}/api/auth/items/${itemId}/offers`, { withCredentials: true });
             setOffers(res.data);
             setSelectedItem(itemId);
         } catch (err: any) {
@@ -55,14 +56,14 @@ export const Dashboard = () => {
     const respondToOffer = async (offerId: number, action: "accept" | "decline") => {
         try {
             const res = await axios.put(
-                `/api/auth/offers/${offerId}/respond`,
+                `${API_URL}/api/auth/offers/${offerId}/respond`,
                 { action },
                 { withCredentials: true }
             );
             alert(res.data.message);
 
             if (selectedItem) {
-                const refreshed = await axios.get(`/api/auth/items/${selectedItem}/offers`, { withCredentials: true });
+                const refreshed = await axios.get(`${API_URL}/api/auth/items/${selectedItem}/offers`, { withCredentials: true });
                 setOffers(refreshed.data);
             }
         } catch (err: any) {
@@ -73,7 +74,7 @@ export const Dashboard = () => {
 
     const deleteItem = async (itemId: number) => {
         try {
-            await axios.delete(`/api/auth/items/${itemId}`, { withCredentials: true });
+            await axios.delete(`${API_URL}/api/auth/items/${itemId}`, { withCredentials: true });
             setItems((prev) => prev.filter((item) => item.id !== itemId));
             alert("Item deleted successfully.");
         } catch (err: any) {

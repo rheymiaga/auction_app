@@ -7,6 +7,7 @@ import { MdAppRegistration, MdDashboard } from "react-icons/md";
 import { TbLogin2 } from "react-icons/tb";
 import { HiOutlineShoppingCart } from "react-icons/hi";
 import { FaRegListAlt } from "react-icons/fa";
+import { API_URL } from "../../api";
 
 interface User {
     id: string;
@@ -25,7 +26,7 @@ export const Navbar = ({ user, setUser }: NavbarProps) => {
 
     const handleLogout = async () => {
         try {
-            await axios.post("/api/auth/logout");
+            await axios.post(`${API_URL}/api/auth/logout`);
             setUser(null);
             navigate("/");
         } catch (error) {

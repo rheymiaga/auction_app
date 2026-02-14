@@ -3,6 +3,7 @@ import { useState } from "react";
 import { FaArrowLeft, FaUser, FaEnvelope, FaLock } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { TbLogin2 } from "react-icons/tb";
+import { API_URL } from "../../../api";
 
 type User = {
     id: string;
@@ -22,7 +23,7 @@ export const Register = ({ setUser }: RegisterProps) => {
     const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            const res = await axios.post("/api/auth/register", form, {
+            const res = await axios.post(`${API_URL}/api/auth/register`, form, {
                 headers: { "Content-Type": "application/json" },
             });
 

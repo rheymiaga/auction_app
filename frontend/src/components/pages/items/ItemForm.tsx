@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { API_URL } from "../../../api";
 
 export const ItemForm = () => {
     const [name, setName] = useState("");
@@ -27,7 +28,7 @@ export const ItemForm = () => {
                 formData.append("image", imageFile);
             }
 
-            const res = await axios.post("/api/auth/items", formData, {
+            const res = await axios.post(`${API_URL}/api/auth/items`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 
