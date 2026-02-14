@@ -10,17 +10,7 @@ dotenv.config();
 
 const app = express();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
-app.use(
-    "/uploads",
-    express.static(
-        process.env.NODE_ENV === "production"
-            ? "/uploads"
-            : path.join(process.cwd(), "uploads")
-    )
-);
 
 // ======================= CORS CONFIG =======================
 const allowedOrigins = [
@@ -54,6 +44,15 @@ app.use(cookieParser());
 app.get("/", (req: Request, res: Response) => {
     res.send("Auction_Xpress backend is running");
 });
+
+app.use(
+    "/uploads",
+    express.static(
+        process.env.NODE_ENV === "production"
+            ? "/uploads"
+            : path.join(process.cwd(), "uploads")
+    )
+);
 
 app.use("/api/auth", authRoutes);
 

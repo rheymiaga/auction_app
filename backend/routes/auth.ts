@@ -4,29 +4,12 @@ import jwt from "jsonwebtoken";
 import fs from "fs";
 import pool from "../config/db.js";
 import { protect } from "../middleware/auth.js";
-import multer, { StorageEngine } from "multer";
+import upload from "./multer.js";
 import path from "path";
 import dotenv from "dotenv";
 dotenv.config();
 
 const router = express.Router();
-
-// ======================= MULTER CONFIG =======================
-const storage: StorageEngine = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadPath =
-            process.env.NODE_ENV === "production"
-                ? "/uploads"
-                : path.join(process.cwd(), "uploads");
-
-        cb(null, uploadPath);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    },
-});
-const upload = multer({ storage });
-
 
 // ======================= COOKIE + JWT =======================
 const cookieOptions = {
@@ -131,6 +114,7 @@ router.post(
             const imgUrl = req.file
                 ? `${BASE_URL}/uploads/${req.file.filename}`
                 : null;
+
             const ownerId = (req as any).user?.id;
             if (!ownerId) {
                 return res.status(401).json({ message: "Unauthorized" });
@@ -154,6 +138,7 @@ router.post(
         }
     }
 );
+
 
 
 
