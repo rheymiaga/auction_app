@@ -22,7 +22,9 @@ api.interceptors.response.use(
         if (error.response && error.response.status === 401) {
             localStorage.removeItem("token");
 
-            window.location.href = "/login";
+            if (window.location.pathname !== "/") {
+                window.location.replace("/");
+            }
         }
         return Promise.reject(error);
     }

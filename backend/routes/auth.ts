@@ -56,7 +56,7 @@ router.post("/register", async (req: Request, res: Response) => {
 
         const token = generateToken(newUser.rows[0].id);
         res.cookie("token", token, cookieOptions);
-        res.status(201).json({ user: newUser.rows[0], token }); // ✅ return token
+        res.status(201).json({ user: newUser.rows[0], token });
     } catch (err: any) {
         console.error("Error registering user:", err.message);
         res.status(500).json({ message: "Registration failed", error: err.message });
@@ -84,7 +84,7 @@ router.post("/login", async (req: Request, res: Response) => {
 
         const token = generateToken(userData.id);
         res.cookie("token", token, cookieOptions);
-        res.json({ user: { id: userData.id, name: userData.name, email: userData.email }, token }); // ✅ return token
+        res.json({ user: { id: userData.id, name: userData.name, email: userData.email }, token });
     } catch (err: any) {
         console.error("Error logging in:", err.message);
         res.status(500).json({ message: "Login failed", error: err.message });
