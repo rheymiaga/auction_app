@@ -191,6 +191,44 @@ router.post("/items/:id/offers", protect, async (req: Request, res: Response) =>
     }
 });
 
+// Respond to an offer (accept or decline)
+router.put("/offers/:id/respond", protect, async (req: Request, res: Response) => {
+    try {
+        const { action } = req.body;
+        const offerId = req.params.id;
+
+        const offerResult = await pool.query("SELECT * FROM offers WHERE id = $1", [offerId]);
+        if (!offerResult.rows.length) {
+            return res.status(404).json({ message: "Offer not found" });
+        }
+        const offer = offerResult.rows[0];
+
+        if (action === "accept") {
+            await pool.query("UPDATE offers SET status = 'accepted' WHERE id = $1", [offerId]);
+
+            await pool.query(
+                "UPDATE items SET status = true, current_price = $1 WHERE id = $2",
+                [offer.offer_price, offer.item_id]
+            );
+            await pool.query(
+                "UPDATE offers SET status = 'declined' WHERE item_id = $1 AND id != $2",
+                [offer.item_id, offerId]
+            );
+
+            return res.json({ message: "Offer accepted", acceptedPrice: offer.offer_price });
+        } else if (action === "decline") {
+            await pool.query("UPDATE offers SET status = 'declined' WHERE id = $1", [offerId]);
+            return res.json({ message: "Offer declined" });
+        } else {
+            return res.status(400).json({ message: "Invalid action" });
+        }
+    } catch (err: any) {
+        console.error("Error responding to offer:", err.message);
+        res.status(500).json({ message: "Failed to respond to offer", error: err.message });
+    }
+});
+
+
 // View offers for an item
 router.get("/items/:id/offers", protect, async (req: Request, res: Response) => {
     try {

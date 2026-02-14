@@ -57,9 +57,22 @@ export const Dashboard = () => {
             const res = await api.put(`/api/auth/offers/${offerId}/respond`, { action });
             alert(res.data.message);
 
-            if (selectedItem) {
-                const refreshed = await api.get(`/api/auth/items/${selectedItem}/offers`);
-                setOffers(refreshed.data);
+            if (action === "accept") {
+                setOffers([]);
+                setSelectedItem(null);
+
+                setItems((prev) =>
+                    prev.map((item) =>
+                        item.id === selectedItem
+                            ? { ...item, status: true, current_price: res.data.acceptedPrice, offer_count: 0 }
+                            : item
+                    )
+                );
+            } else {
+                if (selectedItem) {
+                    const refreshed = await api.get(`/api/auth/items/${selectedItem}/offers`);
+                    setOffers(refreshed.data);
+                }
             }
         } catch (err: any) {
             console.error("Error responding to offer:", err.response?.data || err.message);
@@ -123,7 +136,7 @@ export const Dashboard = () => {
                             alt={item.name}
                             className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
                             onError={(e) => {
-                                // fallback if no image exists
+                         
                                 (e.target as HTMLImageElement).src =
                                     "https://via.placeholder.com/300x200?text=No+Image";
                             }}
