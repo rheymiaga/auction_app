@@ -121,7 +121,7 @@ export const Dashboard = () => {
                     >
                         {item.img_url ? (
                             <img
-                                src={`${API_URL}${item.img_url}`}
+                                src={item.img_url}
                                 alt={item.name}
                                 className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
                             />

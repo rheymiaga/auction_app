@@ -31,7 +31,7 @@ export default function Marketplace() {
                     if (!item.status) return true;
                     const updated = new Date(item.updated_at);
                     const diffMs = now.getTime() - updated.getTime();
-                    return diffMs < 60 * 60 * 1000; 
+                    return diffMs < 60 * 60 * 1000;
                 });
 
                 setItems(filtered);
@@ -122,7 +122,7 @@ export default function Marketplace() {
                             >
                                 {item.img_url ? (
                                     <img
-                                        src={`${API_URL}${item.img_url}`}
+                                        src={item.img_url}
                                         alt={item.name}
                                         className="w-full h-56 object-cover hover:scale-105 transition-transform duration-300"
                                     />
