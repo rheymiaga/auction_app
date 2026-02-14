@@ -1,4 +1,3 @@
-import axios from "axios";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { HiOutlineLogout, HiOutlineMenu, HiOutlineX } from "react-icons/hi";
@@ -7,7 +6,7 @@ import { MdAppRegistration, MdDashboard } from "react-icons/md";
 import { TbLogin2 } from "react-icons/tb";
 import { HiOutlineShoppingCart } from "react-icons/hi";
 import { FaRegListAlt } from "react-icons/fa";
-import { API_URL } from "../../api";
+import api from "../../services/api"
 
 interface User {
     id: string;
@@ -26,20 +25,10 @@ export const Navbar = ({ user, setUser }: NavbarProps) => {
 
     const handleLogout = async () => {
         try {
-            const token = localStorage.getItem("token");
-            await axios.post(`${API_URL}/api/auth/logout`, {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            localStorage.removeItem("token");
-            setUser(null);
-            navigate("/");
-        } catch (error) {
-            console.error("Logout failed:", error);
-        }
+            await api.post("/api/auth/logout"); localStorage.removeItem("token");
+            setUser(null); navigate("/");
+        } catch (error) { console.error("Logout failed:", error); }
     };
-
-
-    // Prevent background scroll when drawer is open
     useEffect(() => {
         document.body.style.overflow = isOpen ? "hidden" : "auto";
     }, [isOpen]);
@@ -53,7 +42,6 @@ export const Navbar = ({ user, setUser }: NavbarProps) => {
     if (user) {
         return (
             <>
-                {/* Large screen sidebar */}
                 <aside className="hidden lg:flex fixed top-0 left-0 h-screen w-64 bg-black/80 backdrop-blur-md border-r border-gray-700 flex-col z-50">
                     <div className="p-6 text-center border-b border-gray-700">
                         <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-pink-500 flex items-center justify-center gap-2">

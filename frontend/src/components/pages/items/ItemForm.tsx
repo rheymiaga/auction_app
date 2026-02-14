@@ -1,6 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
-import { API_URL } from "../../../api";
+import api from "../../../services/api"
 
 export const ItemForm = () => {
     const [name, setName] = useState("");
@@ -28,13 +27,8 @@ export const ItemForm = () => {
                 formData.append("image", imageFile);
             }
 
-            const token = localStorage.getItem("token");
-
-            const res = await axios.post(`${API_URL}/api/auth/items`, formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                    Authorization: `Bearer ${token}`,
-                },
+            const res = await api.post("/api/auth/items", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
             });
 
             alert("Item posted successfully!");

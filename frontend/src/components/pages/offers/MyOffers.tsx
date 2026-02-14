@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { API_URL } from "../../../api";
+import api from "../../../services/api"
 
 interface MyOffer {
     id: number;
@@ -16,10 +15,7 @@ export const MyOffers = () => {
     useEffect(() => {
         const fetchOffers = async () => {
             try {
-                const token = localStorage.getItem("token");
-                const res = await axios.get(`${API_URL}/api/auth/my-offers`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const res = await api.get("/api/auth/my-offers");
                 setOffers(res.data);
             } catch (err: any) {
                 console.error("Error fetching my offers:", err.response?.data || err.message);

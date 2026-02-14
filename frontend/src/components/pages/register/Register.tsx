@@ -1,9 +1,8 @@
-import axios from "axios";
 import { useState } from "react";
 import { FaArrowLeft, FaUser, FaEnvelope, FaLock } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { TbLogin2 } from "react-icons/tb";
-import { API_URL } from "../../../api";
+import api from "../../../services/api"
 
 type User = {
     id: string;
@@ -23,7 +22,7 @@ export const Register = ({ setUser }: RegisterProps) => {
     const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            const res = await axios.post(`${API_URL}/api/auth/register`, form, {
+            const res = await api.post("/api/auth/register", form, {
                 headers: { "Content-Type": "application/json" },
             });
 
@@ -37,6 +36,7 @@ export const Register = ({ setUser }: RegisterProps) => {
             setError(err.response?.data?.message || "Registration failed");
         }
     };
+
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-indigo-900 via-black to-purple-900 relative overflow-hidden">

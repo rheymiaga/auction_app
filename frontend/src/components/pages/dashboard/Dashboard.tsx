@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { API_URL } from "../../../api";
-
+import api from "../../../services/api"
 interface Item {
     id: number;
     name: string;
@@ -30,10 +28,7 @@ export const Dashboard = () => {
     useEffect(() => {
         const fetchDashboard = async () => {
             try {
-                const token = localStorage.getItem("token");
-                const res = await axios.get(`${API_URL}/api/auth/dashboard`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const res = await api.get("/api/auth/dashboard");
                 setItems(res.data.items);
                 const soldCount = res.data.items.filter((i: Item) => i.status === true).length;
                 setSoldItems(soldCount);
@@ -47,10 +42,7 @@ export const Dashboard = () => {
 
     const viewOffers = async (itemId: number) => {
         try {
-            const token = localStorage.getItem("token");
-            const res = await axios.get(`${API_URL}/api/auth/items/${itemId}/offers`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await api.get(`/api/auth/items/${itemId}/offers`);
             setOffers(res.data);
             setSelectedItem(itemId);
         } catch (err: any) {
@@ -59,21 +51,13 @@ export const Dashboard = () => {
         }
     };
 
-
     const respondToOffer = async (offerId: number, action: "accept" | "decline") => {
         try {
-            const token = localStorage.getItem("token");
-            const res = await axios.put(
-                `${API_URL}/api/auth/offers/${offerId}/respond`,
-                { action },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            const res = await api.put(`/api/auth/offers/${offerId}/respond`, { action });
             alert(res.data.message);
 
             if (selectedItem) {
-                const refreshed = await axios.get(`${API_URL}/api/auth/items/${selectedItem}/offers`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const refreshed = await api.get(`/api/auth/items/${selectedItem}/offers`);
                 setOffers(refreshed.data);
             }
         } catch (err: any) {
@@ -82,13 +66,9 @@ export const Dashboard = () => {
         }
     };
 
-
     const deleteItem = async (itemId: number) => {
         try {
-            const token = localStorage.getItem("token");
-            await axios.delete(`${API_URL}/api/auth/items/${itemId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.delete(`/api/auth/items/${itemId}`);
             setItems((prev) => prev.filter((item) => item.id !== itemId));
             alert("Item deleted successfully.");
         } catch (err: any) {

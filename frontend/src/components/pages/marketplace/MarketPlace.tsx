@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { API_URL } from "../../../api";
+import api from "../../../services/api"
 
 interface Item {
     id: number;
@@ -24,12 +23,9 @@ export default function Marketplace() {
     useEffect(() => {
         const fetchItems = async () => {
             try {
-                const token = localStorage.getItem("token");
-                const res = await axios.get(`${API_URL}/api/auth/items`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-
+                const res = await api.get("/api/auth/items");
                 const now = new Date();
+
                 const filtered = res.data.filter((item: Item) => {
                     if (!item.status) return true;
                     const updated = new Date(item.updated_at);
@@ -46,7 +42,6 @@ export default function Marketplace() {
 
         fetchItems();
     }, []);
-
 
     useEffect(() => {
         if (!searchQuery.trim()) {
@@ -70,12 +65,9 @@ export default function Marketplace() {
             return;
         }
         try {
-            const token = localStorage.getItem("token");
-            const res = await axios.post(
-                `${API_URL}/api/auth/items/${itemId}/offers`,
-                { offer_price: offerPrice },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            const res = await api.post(`/api/auth/items/${itemId}/offers`, {
+                offer_price: offerPrice,
+            });
 
             alert(`Offer submitted: ₱${res.data.offer_price}`);
             setOfferInput((prev) => ({ ...prev, [itemId]: 0 }));
@@ -86,6 +78,7 @@ export default function Marketplace() {
             );
         }
     };
+
 
     return (
         <div className="flex-1 p-8 mt-10 lg:mt-0 transition-all duration-300 transform text-white bg-linear-to-br from-gray-900 via-black to-gray-800 min-h-screen">

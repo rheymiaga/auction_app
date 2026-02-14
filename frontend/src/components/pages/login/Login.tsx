@@ -1,9 +1,8 @@
-import axios from "axios";
 import { useState } from "react";
 import { FaArrowLeft, FaEnvelope, FaLock } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { MdAppRegistration } from "react-icons/md";
-import { API_URL } from "../../../api";
+import api from "../../../services/api"
 
 type User = {
     id: string;
@@ -23,13 +22,14 @@ export const Login = ({ setUser }: LoginProps) => {
     const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            const res = await axios.post(`${API_URL}/api/auth/login`, form, {
+            const res = await api.post("/api/auth/login", form, {
                 headers: { "Content-Type": "application/json" },
             });
 
             localStorage.setItem("token", res.data.token);
 
             setUser(res.data.user);
+
             navigate("/");
         } catch (err: any) {
             console.error(err.response?.data);
