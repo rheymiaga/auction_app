@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../../services/api";
+import imagePlaceholder from '../../../assets/imagePlaceholder.png'
 
 interface Item {
     id: number;
@@ -119,14 +120,14 @@ export default function Marketplace() {
                                 className="bg-gray-800/80 backdrop-blur-md rounded-xl shadow-lg hover:shadow-purple-500/40 
           transition transform hover:-translate-y-2 overflow-hidden flex flex-col border border-gray-700"
                             >
+                                import imagePlaceholder from "../../../assets/imagePlaceholder.png";
+
                                 <img
                                     src={`https://express-backend-r2by.onrender.com/api/auth/items/${item.id}/image`}
                                     alt={item.name}
                                     className="w-full h-56 object-cover hover:scale-105 transition-transform duration-300"
                                     onError={(e) => {
-                                        // fallback if no image exists
-                                        (e.target as HTMLImageElement).src =
-                                            "https://via.placeholder.com/300x200?text=No+Image";
+                                        (e.target as HTMLImageElement).src = imagePlaceholder;
                                     }}
                                 />
 
