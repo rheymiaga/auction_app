@@ -120,8 +120,6 @@ export default function Marketplace() {
                                 className="bg-gray-800/80 backdrop-blur-md rounded-xl shadow-lg hover:shadow-purple-500/40 
           transition transform hover:-translate-y-2 overflow-hidden flex flex-col border border-gray-700"
                             >
-                                import imagePlaceholder from "../../../assets/imagePlaceholder.png";
-
                                 <img
                                     src={`https://express-backend-r2by.onrender.com/api/auth/items/${item.id}/image`}
                                     alt={item.name}
