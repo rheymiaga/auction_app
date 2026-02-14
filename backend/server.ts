@@ -10,15 +10,26 @@ dotenv.config();
 
 const app = express();
 
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ======================= CORS CONFIG =======================
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://auction-xpress.onrender.com"
+];
+
 const corsOptions: cors.CorsOptions = {
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
     credentials: true,
 };
+
 app.use(cors(corsOptions));
 
 // ======================= MIDDLEWARE =======================
@@ -55,5 +66,5 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 const PORT: number = process.env.PORT ? Number(process.env.PORT) : 4000;
 
 app.listen(PORT, () => {
-    console.log(` Server is running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });
