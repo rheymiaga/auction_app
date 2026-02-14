@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/server.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -b && vite build",
     "start": "node dist/server.js",
     "dev": "nodemon --exec \"node --loader ts-node/esm\" server.ts"
   },
