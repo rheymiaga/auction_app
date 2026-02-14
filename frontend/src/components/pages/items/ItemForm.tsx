@@ -89,9 +89,13 @@ export const ItemForm = () => {
                                     className="w-56 h-56 object-cover rounded-lg mt-2 shadow-lg hover:scale-105 transition"
                                 />
                             ) : (
-                                <img className="w-56 h-56 object-cover text-center text-white/80 items-center rounded-lg mt-2 shadow-lg hover:scale-105 transition"
-                                    src={imagePlaceholder} alt="image placeholder">No image</img>
+                                <img
+                                    src={imagePlaceholder}
+                                    alt="No image"
+                                    className="w-56 h-56 object-cover rounded-lg mt-2 shadow-lg hover:scale-105 transition"
+                                />
                             )}
+
                         </label>
                     </div>
 
