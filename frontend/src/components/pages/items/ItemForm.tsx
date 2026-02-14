@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import api from "../../../services/api";
-import imagePlaceholder from '../../../assets/imagePlaceholder.png'
 
 export const ItemForm = () => {
     const [name, setName] = useState("");
@@ -89,13 +88,10 @@ export const ItemForm = () => {
                                     className="w-56 h-56 object-cover rounded-lg mt-2 shadow-lg hover:scale-105 transition"
                                 />
                             ) : (
-                                <img
-                                    src={imagePlaceholder}
-                                    alt="No image"
-                                    className="w-56 h-56 object-cover rounded-lg mt-2 shadow-lg hover:scale-105 transition"
-                                />
+                                <div className="w-56 h-56 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500">
+                                    No Image
+                                </div>
                             )}
-
                         </label>
                     </div>
 
