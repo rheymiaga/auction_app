@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import api from "../../../services/api";
-import { API_URL } from "../../../services/api";
 
 interface Item {
     id: number;
