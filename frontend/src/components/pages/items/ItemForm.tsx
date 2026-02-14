@@ -7,6 +7,7 @@ export const ItemForm = () => {
     const [startingPrice, setStartingPrice] = useState("");
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null;
@@ -24,6 +25,9 @@ export const ItemForm = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (loading) return; 
+        setLoading(true);
+
         try {
             const formData = new FormData();
             formData.append("name", name);
@@ -51,6 +55,8 @@ export const ItemForm = () => {
         } catch (err: any) {
             console.error("Error posting item:", err.response?.data || err.message);
             alert("Failed to post item");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -125,9 +131,13 @@ export const ItemForm = () => {
 
                         <button
                             type="submit"
-                            className="w-full py-3 rounded-lg bg-linear-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-lg hover:scale-105 transform transition duration-300 ease-in-out"
+                            disabled={loading}
+                            className={`w-full py-3 rounded-lg text-white font-semibold shadow-lg transform transition duration-300 ease-in-out ${loading
+                                    ? "bg-gray-600 cursor-not-allowed"
+                                    : "bg-linear-to-r from-purple-600 to-indigo-600 hover:scale-105"
+                                }`}
                         >
-                            Post to Marketplace
+                            {loading ? "Posting..." : "Post to Marketplace"}
                         </button>
                     </div>
                 </div>
