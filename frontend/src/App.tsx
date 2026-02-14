@@ -91,7 +91,9 @@ function App() {
             path="/my-offers"
             element={user ? <MyOffers /> : <Navigate to="/" />}
           />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
+
       </div>
     </div>
   );

@@ -34,7 +34,7 @@ app.use(cors(corsOptions));
 
 // ======================= MIDDLEWARE =======================
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // ✅ handle form-data
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Serve uploaded images

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../../services/api";
+import { API_URL } from "../../../services/api";
 
 interface Item {
     id: number;
@@ -30,7 +31,7 @@ export default function Marketplace() {
                     if (!item.status) return true;
                     const updated = new Date(item.updated_at);
                     const diffMs = now.getTime() - updated.getTime();
-                    return diffMs < 60 * 60 * 1000; // show sold items only if updated within the last hour
+                    return diffMs < 60 * 60 * 1000; 
                 });
 
                 setItems(filtered);
@@ -121,7 +122,7 @@ export default function Marketplace() {
                             >
                                 {item.img_url ? (
                                     <img
-                                        src={`http://localhost:4000${item.img_url}`}
+                                        src={`${API_URL}${item.img_url}`}
                                         alt={item.name}
                                         className="w-full h-56 object-cover hover:scale-105 transition-transform duration-300"
                                     />

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../../services/api";
+import { API_URL } from "../../../services/api";
 
 interface Item {
     id: number;
@@ -120,7 +121,7 @@ export const Dashboard = () => {
                     >
                         {item.img_url ? (
                             <img
-                                src={`http://localhost:4000${item.img_url}`}
+                                src={`${API_URL}${item.img_url}`}
                                 alt={item.name}
                                 className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
                             />
