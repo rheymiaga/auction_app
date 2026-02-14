@@ -26,13 +26,18 @@ export const Navbar = ({ user, setUser }: NavbarProps) => {
 
     const handleLogout = async () => {
         try {
-            await axios.post(`${API_URL}/api/auth/logout`);
+            const token = localStorage.getItem("token");
+            await axios.post(`${API_URL}/api/auth/logout`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            localStorage.removeItem("token");
             setUser(null);
             navigate("/");
         } catch (error) {
             console.error("Logout failed:", error);
         }
     };
+
 
     // Prevent background scroll when drawer is open
     useEffect(() => {

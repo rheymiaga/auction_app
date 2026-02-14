@@ -14,11 +14,21 @@ export const MyOffers = () => {
     const [offers, setOffers] = useState<MyOffer[]>([]);
 
     useEffect(() => {
-        axios
-            .get(`${API_URL}/api/auth/my-offers`, { withCredentials: true })
-            .then((res) => setOffers(res.data))
-            .catch((err) => console.error("Error fetching my offers:", err));
+        const fetchOffers = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const res = await axios.get(`${API_URL}/api/auth/my-offers`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setOffers(res.data);
+            } catch (err: any) {
+                console.error("Error fetching my offers:", err.response?.data || err.message);
+            }
+        };
+
+        fetchOffers();
     }, []);
+
 
     return (
         <div className="p-8 mt-10 lg:mt-0 duration-300 transform transition-all text-white min-h-screen bg-linear-to-br from-gray-900 via-black to-gray-800">

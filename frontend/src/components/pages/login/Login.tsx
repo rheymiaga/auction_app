@@ -27,6 +27,8 @@ export const Login = ({ setUser }: LoginProps) => {
                 headers: { "Content-Type": "application/json" },
             });
 
+            localStorage.setItem("token", res.data.token);
+
             setUser(res.data.user);
             navigate("/");
         } catch (err: any) {
@@ -34,6 +36,7 @@ export const Login = ({ setUser }: LoginProps) => {
             setError(err.response?.data?.message || "Invalid email or password");
         }
     };
+
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-purple-900 via-black to-indigo-900 relative overflow-hidden">

@@ -22,9 +22,13 @@ export default function Marketplace() {
     const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
-        axios
-            .get(`${API_URL}/api/auth/items`, { withCredentials: true })
-            .then((res) => {
+        const fetchItems = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const res = await axios.get(`${API_URL}/api/auth/items`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
                 const now = new Date();
                 const filtered = res.data.filter((item: Item) => {
                     if (!item.status) return true;
@@ -32,13 +36,17 @@ export default function Marketplace() {
                     const diffMs = now.getTime() - updated.getTime();
                     return diffMs < 60 * 60 * 1000;
                 });
+
                 setItems(filtered);
                 setFilteredItems(filtered);
-            })
-            .catch(() => {
+            } catch (err: any) {
                 setErrorMessage("Failed to load marketplace items.");
-            });
+            }
+        };
+
+        fetchItems();
     }, []);
+
 
     useEffect(() => {
         if (!searchQuery.trim()) {
@@ -62,11 +70,13 @@ export default function Marketplace() {
             return;
         }
         try {
+            const token = localStorage.getItem("token");
             const res = await axios.post(
                 `${API_URL}/api/auth/items/${itemId}/offers`,
                 { offer_price: offerPrice },
-                { withCredentials: true }
+                { headers: { Authorization: `Bearer ${token}` } }
             );
+
             alert(`Offer submitted: ₱${res.data.offer_price}`);
             setOfferInput((prev) => ({ ...prev, [itemId]: 0 }));
             setErrorMessage(null);

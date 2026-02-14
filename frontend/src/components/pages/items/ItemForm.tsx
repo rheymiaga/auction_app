@@ -28,17 +28,23 @@ export const ItemForm = () => {
                 formData.append("image", imageFile);
             }
 
+            const token = localStorage.getItem("token");
+
             const res = await axios.post(`${API_URL}/api/auth/items`, formData, {
-                headers: { "Content-Type": "multipart/form-data" },
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${token}`,
+                },
             });
 
             alert("Item posted successfully!");
             console.log(res.data);
-        } catch (err) {
-            console.error(err);
+        } catch (err: any) {
+            console.error("Error posting item:", err.response?.data || err.message);
             alert("Failed to post item");
         }
     };
+
 
     return (
         <div className="min-h-screen mt-10 lg:mt-0 transform transition-all duration-300 w-full flex items-center justify-center bg-linear-to-br from-gray-900 via-black to-gray-800 p-6">

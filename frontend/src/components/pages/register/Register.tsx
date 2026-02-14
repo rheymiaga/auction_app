@@ -27,7 +27,10 @@ export const Register = ({ setUser }: RegisterProps) => {
                 headers: { "Content-Type": "application/json" },
             });
 
+            localStorage.setItem("token", res.data.token);
+
             setUser(res.data.user);
+
             navigate("/");
         } catch (err: any) {
             console.error(err.response?.data);
