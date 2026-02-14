@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Navbar } from "./components/navbar/NavBar";
 import { Home } from "./components/pages/home/Home";
@@ -9,16 +8,13 @@ import { Dashboard } from "./components/pages/dashboard/Dashboard";
 import { ItemForm } from "./components/pages/items/ItemForm";
 import Marketplace from "./components/pages/marketplace/MarketPlace";
 import { MyOffers } from "./components/pages/offers/MyOffers";
-import { API_URL } from "./api";
+import api from "./services/api"
 
 interface User {
   id: string;
   name: string;
   email: string;
 }
-
-// Configure axios
-axios.defaults.withCredentials = true;
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -28,7 +24,7 @@ function App() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`${API_URL}/api/auth/me`);
+        const res = await api.get("/api/auth/me");
         setUser(res.data);
       } catch {
         setUser(null);
