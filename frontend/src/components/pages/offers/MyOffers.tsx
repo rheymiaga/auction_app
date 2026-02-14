@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../../../services/api"
+import api from "../../../services/api";
 
 interface MyOffer {
     id: number;
@@ -24,8 +24,7 @@ export const MyOffers = () => {
 
         fetchOffers();
     }, []);
-
-
+    
     return (
         <div className="p-8 mt-10 lg:mt-0 duration-300 transform transition-all text-white min-h-screen bg-linear-to-br from-gray-900 via-black to-gray-800">
             <h1 className="text-4xl font-extrabold mb-8 text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-pink-500">

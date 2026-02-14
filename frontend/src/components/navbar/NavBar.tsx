@@ -6,7 +6,7 @@ import { MdAppRegistration, MdDashboard } from "react-icons/md";
 import { TbLogin2 } from "react-icons/tb";
 import { HiOutlineShoppingCart } from "react-icons/hi";
 import { FaRegListAlt } from "react-icons/fa";
-import api from "../../services/api"
+import api from "../../services/api";
 
 interface User {
     id: string;
@@ -25,10 +25,15 @@ export const Navbar = ({ user, setUser }: NavbarProps) => {
 
     const handleLogout = async () => {
         try {
-            await api.post("/api/auth/logout"); localStorage.removeItem("token");
-            setUser(null); navigate("/");
-        } catch (error) { console.error("Logout failed:", error); }
+            await api.post("/api/auth/logout");
+            localStorage.removeItem("token");
+            setUser(null);
+            navigate("/");
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
     };
+
     useEffect(() => {
         document.body.style.overflow = isOpen ? "hidden" : "auto";
     }, [isOpen]);

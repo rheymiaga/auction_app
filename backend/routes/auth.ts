@@ -12,7 +12,7 @@ const router = express.Router();
 // ======================= MULTER CONFIG =======================
 const storage: StorageEngine = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "uploads/"); 
+        cb(null, "uploads/");
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname));
@@ -56,7 +56,7 @@ router.post("/register", async (req: Request, res: Response) => {
 
         const token = generateToken(newUser.rows[0].id);
         res.cookie("token", token, cookieOptions);
-        res.status(201).json({ user: newUser.rows[0] });
+        res.status(201).json({ user: newUser.rows[0], token }); // ✅ return token
     } catch (err: any) {
         console.error("Error registering user:", err.message);
         res.status(500).json({ message: "Registration failed", error: err.message });
@@ -84,7 +84,7 @@ router.post("/login", async (req: Request, res: Response) => {
 
         const token = generateToken(userData.id);
         res.cookie("token", token, cookieOptions);
-        res.json({ user: { id: userData.id, name: userData.name, email: userData.email } });
+        res.json({ user: { id: userData.id, name: userData.name, email: userData.email }, token }); // ✅ return token
     } catch (err: any) {
         console.error("Error logging in:", err.message);
         res.status(500).json({ message: "Login failed", error: err.message });
@@ -185,7 +185,6 @@ router.delete("/items/:id", protect, async (req: Request, res: Response) => {
     try {
         const itemId = req.params.id;
 
-        // Find the item and check ownership
         const itemResult = await pool.query(
             "SELECT * FROM items WHERE id = $1 AND owner_id = $2",
             [itemId, (req as any).user.id]
@@ -197,22 +196,13 @@ router.delete("/items/:id", protect, async (req: Request, res: Response) => {
 
         const item = itemResult.rows[0];
 
-        // Delete the item from DB
         await pool.query("DELETE FROM items WHERE id = $1", [itemId]);
 
-        // Delete the image file if it exists
-        if (item.image) {
-            // Use process.cwd() to point to project root
-            const imagePath = path.join(process.cwd(), "uploads", item.image);
-
-            console.log("Trying to delete:", imagePath);
-
+        if (item.img_url) {
+            const imagePath = path.join(process.cwd(), item.img_url.replace("/uploads/", "uploads/"));
             fs.unlink(imagePath, (err) => {
-                if (err) {
-                    console.error("Error deleting image file:", err.message);
-                } else {
-                    console.log("Image file deleted:", imagePath);
-                }
+                if (err) console.error("Error deleting image file:", err.message);
+                else console.log("Image file deleted:", imagePath);
             });
         }
 
@@ -223,22 +213,23 @@ router.delete("/items/:id", protect, async (req: Request, res: Response) => {
     }
 });
 
-
-
-
 // Accept/Decline offer
 router.put("/offers/:id/respond", protect, async (req: Request, res: Response) => {
     try {
         const { action } = req.body;
 
         const offer = await pool.query(
-            `SELECT o.*, i.owner_id FROM offers o
+            `SELECT o.*, i.owner_id 
+       FROM offers o
        JOIN items i ON o.item_id = i.id
        WHERE o.id = $1`,
             [req.params.id]
         );
 
-        if (offer.rows.length === 0) return res.status(404).json({ message: "Offer not found" });
+        if (offer.rows.length === 0) {
+            return res.status(404).json({ message: "Offer not found" });
+        }
+
         if (offer.rows[0].owner_id !== (req as any).user.id) {
             return res.status(403).json({ message: "Not authorized" });
         }
@@ -248,7 +239,9 @@ router.put("/offers/:id/respond", protect, async (req: Request, res: Response) =
 
         if (status === "accepted") {
             await pool.query(
-                `UPDATE items SET status = TRUE, current_price = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2`,
+                `UPDATE items 
+         SET status = TRUE, current_price = $1, updated_at = CURRENT_TIMESTAMP 
+         WHERE id = $2`,
                 [offer.rows[0].offer_price, offer.rows[0].item_id]
             );
         }

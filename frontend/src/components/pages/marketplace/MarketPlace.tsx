@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../../../services/api"
+import api from "../../../services/api";
 
 interface Item {
     id: number;
@@ -30,7 +30,7 @@ export default function Marketplace() {
                     if (!item.status) return true;
                     const updated = new Date(item.updated_at);
                     const diffMs = now.getTime() - updated.getTime();
-                    return diffMs < 60 * 60 * 1000;
+                    return diffMs < 60 * 60 * 1000; // show sold items only if updated within the last hour
                 });
 
                 setItems(filtered);
@@ -78,7 +78,6 @@ export default function Marketplace() {
             );
         }
     };
-
 
     return (
         <div className="flex-1 p-8 mt-10 lg:mt-0 transition-all duration-300 transform text-white bg-linear-to-br from-gray-900 via-black to-gray-800 min-h-screen">

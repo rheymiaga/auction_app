@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FaArrowLeft, FaEnvelope, FaLock } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { MdAppRegistration } from "react-icons/md";
-import api from "../../../services/api"
+import api from "../../../services/api";
 
 type User = {
     id: string;
@@ -27,7 +27,6 @@ export const Login = ({ setUser }: LoginProps) => {
             });
 
             localStorage.setItem("token", res.data.token);
-
             setUser(res.data.user);
 
             navigate("/");
@@ -36,7 +35,6 @@ export const Login = ({ setUser }: LoginProps) => {
             setError(err.response?.data?.message || "Invalid email or password");
         }
     };
-
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-purple-900 via-black to-indigo-900 relative overflow-hidden">

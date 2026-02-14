@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FaArrowLeft, FaUser, FaEnvelope, FaLock } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { TbLogin2 } from "react-icons/tb";
-import api from "../../../services/api"
+import api from "../../../services/api";
 
 type User = {
     id: string;
@@ -27,7 +27,6 @@ export const Register = ({ setUser }: RegisterProps) => {
             });
 
             localStorage.setItem("token", res.data.token);
-
             setUser(res.data.user);
 
             navigate("/");
@@ -36,7 +35,6 @@ export const Register = ({ setUser }: RegisterProps) => {
             setError(err.response?.data?.message || "Registration failed");
         }
     };
-
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-indigo-900 via-black to-purple-900 relative overflow-hidden">

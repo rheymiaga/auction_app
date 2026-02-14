@@ -6,6 +6,7 @@ const api = axios.create({
     baseURL: API_URL,
 });
 
+// Request interceptor: attach token from localStorage
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -13,5 +14,18 @@ api.interceptors.request.use((config) => {
     }
     return config;
 });
+
+// Response interceptor: handle 401 globally
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response && error.response.status === 401) {
+            localStorage.removeItem("token");
+
+            window.location.href = "/login";
+        }
+        return Promise.reject(error);
+    }
+);
 
 export default api;

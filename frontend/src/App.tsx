@@ -8,7 +8,7 @@ import { Dashboard } from "./components/pages/dashboard/Dashboard";
 import { ItemForm } from "./components/pages/items/ItemForm";
 import Marketplace from "./components/pages/marketplace/MarketPlace";
 import { MyOffers } from "./components/pages/offers/MyOffers";
-import api from "./services/api"
+import api from "./services/api";
 
 interface User {
   id: string;
@@ -35,6 +35,16 @@ function App() {
     fetchUser();
   }, []);
 
+  useEffect(() => {
+    const handleStorageChange = () => {
+      if (!localStorage.getItem("token")) {
+        setUser(null);
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-linear-to-tr from-black/50 to-purple-500/30 flex items-center justify-center text-white">
@@ -45,7 +55,6 @@ function App() {
     );
   }
 
-  // Hide navbar on login/register routes
   const hideNavbar = ["/login", "/register"].includes(location.pathname);
 
   return (

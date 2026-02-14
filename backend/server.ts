@@ -16,7 +16,7 @@ const __dirname = path.dirname(__filename);
 // ======================= CORS CONFIG =======================
 const allowedOrigins = [
     "http://localhost:5173",
-    "https://auction-xpress.onrender.com"
+    "https://auction-xpress.onrender.com",
 ];
 
 const corsOptions: cors.CorsOptions = {
@@ -34,6 +34,7 @@ app.use(cors(corsOptions));
 
 // ======================= MIDDLEWARE =======================
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // ✅ handle form-data
 app.use(cookieParser());
 
 // Serve uploaded images
@@ -46,7 +47,6 @@ app.get("/", (req: Request, res: Response) => {
     res.send("Auction_Xpress backend is running");
 });
 
-// Auth routes
 app.use("/api/auth", authRoutes);
 
 // ======================= ERROR HANDLING =======================

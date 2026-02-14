@@ -1,5 +1,5 @@
 import { useState } from "react";
-import api from "../../../services/api"
+import api from "../../../services/api";
 
 export const ItemForm = () => {
     const [name, setName] = useState("");
@@ -33,11 +33,18 @@ export const ItemForm = () => {
 
             alert("Item posted successfully!");
             console.log(res.data);
+
+            setName("");
+            setDescription("");
+            setStartingPrice("");
+            setImageFile(null);
+            setPreview(null);
         } catch (err: any) {
             console.error("Error posting item:", err.response?.data || err.message);
             alert("Failed to post item");
         }
     };
+
 
 
     return (
