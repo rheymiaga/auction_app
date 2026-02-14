@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../../services/api";
+import imagePlaceholder from '../../../assets/imagePlaceholder.jpg'
 
 interface Item {
     id: number;
@@ -136,9 +137,7 @@ export const Dashboard = () => {
                             alt={item.name}
                             className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
                             onError={(e) => {
-                         
-                                (e.target as HTMLImageElement).src =
-                                    "https://via.placeholder.com/300x200?text=No+Image";
+                                (e.target as HTMLImageElement).src = imagePlaceholder;
                             }}
                         />
 
