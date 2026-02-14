@@ -25,8 +25,8 @@ const storage: StorageEngine = multer.diskStorage({
         cb(null, Date.now() + path.extname(file.originalname));
     },
 });
-
 const upload = multer({ storage });
+
 
 // ======================= COOKIE + JWT =======================
 const cookieOptions = {

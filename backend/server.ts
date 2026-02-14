@@ -12,7 +12,16 @@ const app = express();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
+app.use(
+    "/uploads",
+    express.static(
+        process.env.NODE_ENV === "production"
+            ? "/uploads"
+            : path.join(process.cwd(), "uploads")
+    )
+);
+
 // ======================= CORS CONFIG =======================
 const allowedOrigins = [
     "http://localhost:5173",
