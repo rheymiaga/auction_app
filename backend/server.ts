@@ -37,7 +37,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Serve uploaded images from the project root
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // ======================= ROUTES =======================

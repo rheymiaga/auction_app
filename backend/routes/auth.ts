@@ -14,12 +14,14 @@ const router = express.Router();
 // ======================= MULTER CONFIG =======================
 const storage: StorageEngine = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "uploads/");
+        // ✅ Always resolve to project root "uploads" folder
+        cb(null, path.join(process.cwd(), "uploads"));
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname));
     },
 });
+
 const upload = multer({ storage });
 
 // ======================= COOKIE + JWT =======================
@@ -106,6 +108,7 @@ router.post("/logout", (req: Request, res: Response) => {
 
 // ======================= ITEMS =======================
 // Post an item with image upload
+
 router.post(
     "/items",
     protect,
@@ -113,6 +116,7 @@ router.post(
     async (req: Request, res: Response) => {
         try {
             const { name, description, starting_price } = req.body;
+
             const BASE_URL = process.env.BASE_URL || "http://localhost:4000";
             const imgUrl = req.file ? `${BASE_URL}/uploads/${req.file.filename}` : null;
 
@@ -129,7 +133,6 @@ router.post(
         }
     }
 );
-
 
 
 // Get all items (marketplace)
