@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../../../services/api";
+import imagePlaceholder from '../../../assets/imagePlaceholder.png'
 
 export const ItemForm = () => {
     const [name, setName] = useState("");
@@ -25,7 +26,7 @@ export const ItemForm = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (loading) return; 
+        if (loading) return;
         setLoading(true);
 
         try {
@@ -88,9 +89,8 @@ export const ItemForm = () => {
                                     className="w-56 h-56 object-cover rounded-lg mt-2 shadow-lg hover:scale-105 transition"
                                 />
                             ) : (
-                                <div className="w-56 h-56 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500">
-                                    No Image
-                                </div>
+                                <img className="w-56 h-56 object-cover text-center text-white/80 items-center rounded-lg mt-2 shadow-lg hover:scale-105 transition"
+                                    src={imagePlaceholder} alt="image placeholder">No image</img>
                             )}
                         </label>
                     </div>
@@ -133,8 +133,8 @@ export const ItemForm = () => {
                             type="submit"
                             disabled={loading}
                             className={`w-full py-3 rounded-lg text-white font-semibold shadow-lg transform transition duration-300 ease-in-out ${loading
-                                    ? "bg-gray-600 cursor-not-allowed"
-                                    : "bg-linear-to-r from-purple-600 to-indigo-600 hover:scale-105"
+                                ? "bg-gray-600 cursor-not-allowed"
+                                : "bg-linear-to-r from-purple-600 to-indigo-600 hover:scale-105"
                                 }`}
                         >
                             {loading ? "Posting..." : "Post to Marketplace"}
