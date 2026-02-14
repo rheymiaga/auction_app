@@ -118,17 +118,17 @@ export const Dashboard = () => {
                         key={item.id}
                         className="bg-gray-800/80 backdrop-blur-md border border-gray-700 rounded-xl shadow-lg overflow-hidden flex flex-col hover:shadow-purple-500/30 hover:-translate-y-2 transition transform"
                     >
-                        {item.img_url ? (
-                            <img
-                                src={`https://express-backend-r2by.onrender.com/api/auth/items/${item.id}/image`}
-                                alt={item.name}
-                                className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-                            />
-                        ) : (
-                            <div className="w-full h-48 bg-gray-700 flex items-center justify-center">
-                                <span className="text-gray-400">No image</span>
-                            </div>
-                        )}
+                        <img
+                            src={`https://express-backend-r2by.onrender.com/api/auth/items/${item.id}/image`}
+                            alt={item.name}
+                            className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                            onError={(e) => {
+                                // fallback if no image exists
+                                (e.target as HTMLImageElement).src =
+                                    "https://via.placeholder.com/300x200?text=No+Image";
+                            }}
+                        />
+
                         <div className="p-5 flex flex-col grow">
                             <h3 className="text-lg font-bold mb-1 text-purple-300">{item.name}</h3>
                             <p className="text-sm text-gray-300 mb-2 line-clamp-2">{item.description}</p>
@@ -163,6 +163,7 @@ export const Dashboard = () => {
                             </div>
                         </div>
                     </div>
+
                 ))}
             </div>
 

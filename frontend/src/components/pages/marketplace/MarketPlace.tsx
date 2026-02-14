@@ -117,19 +117,18 @@ export default function Marketplace() {
                             <div
                                 key={item.id}
                                 className="bg-gray-800/80 backdrop-blur-md rounded-xl shadow-lg hover:shadow-purple-500/40 
-            transition transform hover:-translate-y-2 overflow-hidden flex flex-col border border-gray-700"
+          transition transform hover:-translate-y-2 overflow-hidden flex flex-col border border-gray-700"
                             >
-                                {item.img_url ? (
-                                    <img
-                                        src={`https://express-backend-r2by.onrender.com/api/auth/items/${item.id}/image`}
-                                        alt={item.name}
-                                        className="w-full h-56 object-cover hover:scale-105 transition-transform duration-300"
-                                    />
-                                ) : (
-                                    <div className="w-full h-56 bg-gray-700 flex items-center justify-center">
-                                        <span className="text-gray-300">No image</span>
-                                    </div>
-                                )}
+                                <img
+                                    src={`https://express-backend-r2by.onrender.com/api/auth/items/${item.id}/image`}
+                                    alt={item.name}
+                                    className="w-full h-56 object-cover hover:scale-105 transition-transform duration-300"
+                                    onError={(e) => {
+                                        // fallback if no image exists
+                                        (e.target as HTMLImageElement).src =
+                                            "https://via.placeholder.com/300x200?text=No+Image";
+                                    }}
+                                />
 
                                 <div className="p-5 flex flex-col flex-1">
                                     <h3 className="text-xl font-semibold mb-1 text-purple-300">
@@ -152,9 +151,7 @@ export default function Marketplace() {
                                     </div>
 
                                     <span
-                                        className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-4 shadow-md ${item.status
-                                            ? "bg-red-600 text-white"
-                                            : "bg-green-600 text-white"
+                                        className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-4 shadow-md ${item.status ? "bg-red-600 text-white" : "bg-green-600 text-white"
                                             }`}
                                     >
                                         {item.status ? "Sold" : "Taking Offers"}
@@ -174,12 +171,12 @@ export default function Marketplace() {
                                                         })
                                                     }
                                                     className="p-2 text-white/80 rounded-lg border border-gray-600 bg-gray-900 
-                      focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+                    focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
                                                 />
                                                 <button
                                                     onClick={() => makeOffer(item.id, offerInput[item.id])}
                                                     className="px-4 py-2 bg-linear-to-r from-purple-600 to-indigo-600 
-                      rounded-lg hover:scale-105 transition font-medium shadow-lg"
+                    rounded-lg hover:scale-105 transition font-medium shadow-lg"
                                                 >
                                                     Submit Offer
                                                 </button>
@@ -193,7 +190,7 @@ export default function Marketplace() {
                                                             makeOffer(item.id, Math.round(basePrice * multiplier))
                                                         }
                                                         className="px-3 py-1 bg-gray-700 rounded-full hover:bg-purple-600 
-                        transition text-sm shadow"
+                      transition text-sm shadow"
                                                     >
                                                         ×{multiplier}
                                                     </button>
@@ -207,6 +204,7 @@ export default function Marketplace() {
                     })
                 )}
             </div>
+
         </div>
     );
 }
