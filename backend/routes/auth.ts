@@ -6,6 +6,8 @@ import pool from "../config/db.js";
 import { protect } from "../middleware/auth.js";
 import multer, { StorageEngine } from "multer";
 import path from "path";
+import dotenv from "dotenv";
+dotenv.config();
 
 const router = express.Router();
 
@@ -103,25 +105,32 @@ router.post("/logout", (req: Request, res: Response) => {
 });
 
 // ======================= ITEMS =======================
-
 // Post an item with image upload
-router.post("/items", protect, upload.single("image"), async (req: Request, res: Response) => {
-    try {
-        const { name, description, starting_price } = req.body;
-        const imgUrl = req.file ? `/uploads/${req.file.filename}` : null;
+router.post(
+    "/items",
+    protect,
+    upload.single("image"),
+    async (req: Request, res: Response) => {
+        try {
+            const { name, description, starting_price } = req.body;
+            const BASE_URL = process.env.BASE_URL || "http://localhost:4000";
+            const imgUrl = req.file ? `${BASE_URL}/uploads/${req.file.filename}` : null;
 
-        const newItem = await pool.query(
-            `INSERT INTO items (name, description, starting_price, owner_id, img_url, created_at, status)
-       VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, FALSE) RETURNING *`,
-            [name, description, starting_price, (req as any).user.id, imgUrl]
-        );
+            const newItem = await pool.query(
+                `INSERT INTO items (name, description, starting_price, owner_id, img_url, created_at, status)
+         VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, FALSE) RETURNING *`,
+                [name, description, starting_price, (req as any).user.id, imgUrl]
+            );
 
-        res.json(newItem.rows[0]);
-    } catch (err: any) {
-        console.error("Error posting item:", err.message);
-        res.status(500).json({ message: "Failed to post item", error: err.message });
+            res.json(newItem.rows[0]);
+        } catch (err: any) {
+            console.error("Error posting item:", err.message);
+            res.status(500).json({ message: "Failed to post item", error: err.message });
+        }
     }
-});
+);
+
+
 
 // Get all items (marketplace)
 router.get("/items", async (req: Request, res: Response) => {
