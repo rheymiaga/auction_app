@@ -1,20 +1,5 @@
-import multer, { StorageEngine } from "multer";
-import path from "path";
+import multer from "multer";
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadPath =
-            process.env.NODE_ENV === "production"
-                ? "/uploads"
-                : path.join(process.cwd(), "uploads");
-        cb(null, uploadPath);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    },
-});
-const upload = multer({ storage });
-
-
+const upload = multer({ storage: multer.memoryStorage() });
 
 export default upload;

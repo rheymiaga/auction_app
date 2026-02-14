@@ -102,30 +102,25 @@ router.post(
     async (req: Request, res: Response) => {
         try {
             const { name, description, starting_price } = req.body;
-
             const price = parseFloat(starting_price);
             if (isNaN(price)) {
                 return res.status(400).json({ message: "Invalid starting_price" });
             }
-
-            const BASE_URL =
-                process.env.BASE_URL || "http://localhost:4000";
-
-            const imgUrl = req.file
-                ? `${BASE_URL}/uploads/${req.file.filename}`
-                : null;
 
             const ownerId = (req as any).user?.id;
             if (!ownerId) {
                 return res.status(401).json({ message: "Unauthorized" });
             }
 
+            const fileBuffer = req.file ? req.file.buffer : null;
+            const fileMime = req.file ? req.file.mimetype : null;
+
             const newItem = await pool.query(
                 `INSERT INTO items 
-         (name, description, starting_price, owner_id, img_url, created_at, status)
-         VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, FALSE) 
+         (name, description, starting_price, owner_id, img_data, img_mime, created_at, status)
+         VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP, FALSE) 
          RETURNING *`,
-                [name, description, price, ownerId, imgUrl]
+                [name, description, price, ownerId, fileBuffer, fileMime]
             );
 
             return res.json(newItem.rows[0]);
@@ -138,6 +133,24 @@ router.post(
         }
     }
 );
+
+router.get("/items/:id/image", async (req, res) => {
+    const { id } = req.params;
+    const result = await pool.query(
+        "SELECT img_data, img_mime FROM items WHERE id = $1",
+        [id]
+    );
+
+    if (!result.rows.length || !result.rows[0].img_data) {
+        return res.status(404).send("Image not found");
+    }
+
+    res.set("Content-Type", result.rows[0].img_mime || "application/octet-stream");
+    res.send(result.rows[0].img_data);
+});
+
+
+
 
 // Get all items (marketplace)
 router.get("/items", async (req: Request, res: Response) => {

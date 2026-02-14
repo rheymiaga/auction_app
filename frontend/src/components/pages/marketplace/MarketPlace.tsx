@@ -121,7 +121,7 @@ export default function Marketplace() {
                             >
                                 {item.img_url ? (
                                     <img
-                                        src={item.img_url}
+                                        src={`https://express-backend-r2by.onrender.com/api/auth/items/${item.id}/image`}
                                         alt={item.name}
                                         className="w-full h-56 object-cover hover:scale-105 transition-transform duration-300"
                                     />

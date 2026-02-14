@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from "../../../services/api";
 
 export const ItemForm = () => {
@@ -16,6 +16,12 @@ export const ItemForm = () => {
         }
     };
 
+    useEffect(() => {
+        return () => {
+            if (preview) URL.revokeObjectURL(preview);
+        };
+    }, [preview]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
@@ -23,8 +29,10 @@ export const ItemForm = () => {
             formData.append("name", name);
             formData.append("description", description);
             formData.append("starting_price", startingPrice);
+
             if (imageFile) {
                 formData.append("image", imageFile);
+                formData.append("image_mime", imageFile.type);
             }
 
             const res = await api.post("/api/auth/items", formData, {
@@ -34,6 +42,7 @@ export const ItemForm = () => {
             alert("Item posted successfully!");
             console.log(res.data);
 
+            // Reset form
             setName("");
             setDescription("");
             setStartingPrice("");
@@ -44,8 +53,6 @@ export const ItemForm = () => {
             alert("Failed to post item");
         }
     };
-
-
 
     return (
         <div className="min-h-screen mt-10 lg:mt-0 transform transition-all duration-300 w-full flex items-center justify-center bg-linear-to-br from-gray-900 via-black to-gray-800 p-6">
