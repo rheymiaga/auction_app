@@ -76,7 +76,7 @@ export const MyOffers = () => {
             )}
 
             {isLoading ? (
-                <div className="space-y-8 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8">
+                <div className="space-y-8 md:space-y-0 md:grid md:grid-cols-2 md:gap-8">
                     {Array.from({ length: 6 }).map((_, i) => (
                         <SkeletonCard key={i} />
                     ))}
