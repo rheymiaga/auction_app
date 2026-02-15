@@ -334,7 +334,7 @@ router.delete("/my-offers/:id", protect, async (req: Request, res: Response) => 
         const offer = offerResult.rows[0];
 
         // Delete the offer
-        await pool.query("DELETE FROM offers WHERE id = $1", [offerId]);
+        await pool.query("DELETE FROM offers WHERE id = $1 AND buyer_id = $2", [offerId, userId]);
 
         res.json({ message: "Offer deleted successfully", deletedOffer: offer });
     } catch (err: any) {

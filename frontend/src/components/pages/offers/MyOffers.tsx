@@ -46,14 +46,14 @@ export const MyOffers = () => {
         }
     };
 
-    // Skeleton card for loading state
+    // Enhanced Skeleton card for loading state
     const SkeletonCard = () => (
         <div className="relative bg-gray-800/40 border border-gray-700 rounded-xl shadow-lg p-6 animate-pulse">
-            <div className="h-6 w-3/4 bg-gray-700 rounded mb-4"></div>
+            <div className="h-6 w-2/3 bg-gray-700 rounded mb-4"></div>
             <div className="h-4 w-1/2 bg-gray-700 rounded mb-2"></div>
             <div className="h-4 w-1/3 bg-gray-700 rounded mb-2"></div>
             <div className="h-4 w-1/4 bg-gray-700 rounded mb-4"></div>
-            <div className="h-8 w-24 bg-gray-700 rounded"></div>
+            <div className="h-8 w-28 bg-gray-700 rounded"></div>
         </div>
     );
 
@@ -82,7 +82,17 @@ export const MyOffers = () => {
                     ))}
                 </div>
             ) : offers.length === 0 ? (
-                <p className="text-gray-400 italic">You haven’t made any offers yet.</p>
+                <div className="flex flex-col items-center justify-center text-center mt-20">
+                    <div className="w-24 h-24 rounded-full bg-gray-700 flex items-center justify-center mb-6">
+                        <span className="text-4xl">📝</span>
+                    </div>
+                    <p className="text-gray-400 italic text-lg">
+                        You haven’t made any offers yet.
+                    </p>
+                    <p className="text-gray-500 text-sm mt-2">
+                        Start exploring items and make your first offer!
+                    </p>
+                </div>
             ) : (
                 <div className="relative">
                     {/* Timeline line */}
