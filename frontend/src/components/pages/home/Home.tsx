@@ -17,7 +17,7 @@ interface HomeProps {
 export const Home = ({ user, error }: HomeProps) => {
     return (
         <div className="flex justify-center items-center min-h-screen bg-linear-to-br from-gray-900 via-black to-gray-800 overflow-hidden relative">
-            {/* Decorative glowing accents */}
+
             <div className="absolute w-72 h-72 bg-purple-600/30 rounded-full blur-3xl top-20 left-10 animate-pulse"></div>
             <div className="absolute w-72 h-72 bg-amber-500/30 rounded-full blur-3xl bottom-20 right-10 animate-pulse"></div>
 
@@ -65,9 +65,9 @@ export const Home = ({ user, error }: HomeProps) => {
                                 <img
                                     src={bid}
                                     alt="Auction illustration"
-                                    className="max-w-md w-full object-contain rounded-2xl shadow-2xl opacity-90 group-hover:opacity-100 transition duration-500 transform group-hover:scale-105"
+                                    className="max-w-md w-full object-contain rounded-2xl opacity-90 group-hover:opacity-100 transition duration-500 transform group-hover:scale-105"
                                 />
-                                {/* Glow effect */}
+                      
                                 <div className="absolute inset-0 rounded-2xl bg-linear-to-r from-purple-500/20 to-amber-500/20 blur-2xl opacity-0 group-hover:opacity-100 transition duration-500"></div>
                             </div>
                         </div>

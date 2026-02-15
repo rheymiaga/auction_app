@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../../services/api";
+import imagePlaceholder from "../../../assets/imagePlaceholder.jpg";
 
 interface MyOffer {
     id: number;
@@ -8,6 +9,7 @@ interface MyOffer {
     offer_price: number;
     status: string;
     created_at?: string;
+    img_url?: string | null;
 }
 
 export const MyOffers = () => {
@@ -22,14 +24,12 @@ export const MyOffers = () => {
                 setIsLoading(true);
                 const res = await api.get("/api/auth/my-offers");
                 setOffers(res.data);
-            } catch (err: any) {
-                console.error("Error fetching my offers:", err.response?.data || err.message);
+            } catch {
                 setErrorMessage("Failed to fetch offers.");
             } finally {
                 setIsLoading(false);
             }
         };
-
         fetchOffers();
     }, []);
 
@@ -39,20 +39,25 @@ export const MyOffers = () => {
             setOffers((prev) => prev.filter((offer) => offer.id !== id));
             setSuccessMessage("Offer deleted successfully.");
             setErrorMessage(null);
-        } catch (err: any) {
-            console.error("Error deleting offer:", err.response?.data || err.message);
+        } catch {
             setErrorMessage("Failed to delete offer.");
             setSuccessMessage(null);
         }
     };
 
     const SkeletonCard = () => (
-        <div className="relative bg-gray-800/40 border border-gray-700 rounded-xl shadow-lg p-6 animate-pulse">
-            <div className="h-6 w-2/3 bg-gray-700 rounded mb-4"></div>
-            <div className="h-4 w-1/2 bg-gray-700 rounded mb-2"></div>
-            <div className="h-4 w-1/3 bg-gray-700 rounded mb-2"></div>
-            <div className="h-4 w-1/4 bg-gray-700 rounded mb-4"></div>
-            <div className="h-8 w-28 bg-gray-700 rounded md:justify-self-end"></div>
+        <div className="bg-gray-900/40 backdrop-blur-lg rounded-2xl shadow-[6px_6px_12px_rgba(0,0,0,0.6),-6px_-6px_12px_rgba(255,255,255,0.05)] p-6 animate-pulse flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <div className="w-16 h-16 bg-gray-800/70 rounded-xl"></div>
+                    <div className="h-6 w-32 bg-gray-800/70 rounded"></div>
+                </div>
+                <div className="h-4 w-20 bg-gray-800/70 rounded-full"></div>
+            </div>
+            <div className="h-4 w-1/2 bg-gray-800/70 rounded"></div>
+            <div className="h-4 w-1/3 bg-gray-800/70 rounded"></div>
+            <div className="h-6 w-24 bg-gray-800/70 rounded"></div>
+            <div className="h-8 w-28 bg-gray-800/70 rounded self-end"></div>
         </div>
     );
 
@@ -63,13 +68,13 @@ export const MyOffers = () => {
             </h1>
 
             {errorMessage && (
-                <div className="mb-6 p-4 bg-red-700/50 border border-red-600 rounded-lg text-red-200">
+                <div className="mb-6 p-4 bg-red-700/40 border border-red-600 rounded-xl text-red-200 shadow-[inset_2px_2px_6px_rgba(255,255,255,0.05),inset_-2px_-2px_6px_rgba(0,0,0,0.4)]">
                     {errorMessage}
                 </div>
             )}
 
             {successMessage && (
-                <div className="mb-6 p-4 bg-green-700/50 border border-green-600 rounded-lg text-green-200">
+                <div className="mb-6 p-4 bg-green-700/40 border border-green-600 rounded-xl text-green-200 shadow-[inset_2px_2px_6px_rgba(255,255,255,0.05),inset_-2px_-2px_6px_rgba(0,0,0,0.4)]">
                     {successMessage}
                 </div>
             )}
@@ -82,19 +87,14 @@ export const MyOffers = () => {
                 </div>
             ) : offers.length === 0 ? (
                 <div className="flex flex-col items-center justify-center text-center mt-20">
-                    <div className="w-24 h-24 rounded-full bg-gray-700 flex items-center justify-center mb-6">
+                    <div className="w-24 h-24 rounded-full bg-gray-800/70 backdrop-blur-md flex items-center justify-center mb-6 shadow-[6px_6px_12px_rgba(0,0,0,0.6),-6px_-6px_12px_rgba(255,255,255,0.05)]">
                         <span className="text-4xl">📝</span>
                     </div>
-                    <p className="text-gray-400 italic text-lg">
-                        You haven’t made any offers yet.
-                    </p>
-                    <p className="text-gray-500 text-sm mt-2">
-                        Start exploring items and make your first offer!
-                    </p>
+                    <p className="text-gray-300 italic text-lg">You haven’t made any offers yet.</p>
+                    <p className="text-gray-400 text-sm mt-2">Start exploring items and make your first offer!</p>
                 </div>
             ) : (
                 <div className="relative">
-                    {/* Timeline line */}
                     <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-1 bg-gray-700"></div>
 
                     <div className="space-y-12 md:space-y-0 md:grid md:grid-cols-2 md:gap-12">
@@ -104,29 +104,22 @@ export const MyOffers = () => {
                                 className={`relative md:w-[90%] ${index % 2 === 0 ? "md:justify-self-end" : "md:justify-self-start"
                                     }`}
                             >
-                                {/* Timeline dot */}
-                                <span className="absolute -left-3 md:left-auto md:-ml-3 top-6 w-6 h-6 bg-purple-500 rounded-full border-4 border-gray-900"></span>
+                                <span className="absolute -left-3 md:left-auto md:-ml-3 top-6 w-6 h-6 bg-purple-500 rounded-full border-4 border-gray-900 shadow-[0_4px_12px_rgba(128,0,255,0.6)]"></span>
 
-                                {/* Card */}
-                                <div className="bg-gray-800/80 backdrop-blur-md border border-gray-700 rounded-xl shadow-lg p-6 flex flex-col gap-4 hover:shadow-purple-500/30 transition transform hover:-translate-y-1">
-                                    <h3 className="text-lg md:text-xl font-bold text-purple-300">
-                                        {offer.item_name}
-                                    </h3>
-
-                                    <p className="text-sm text-gray-400">
-                                        Seller:{" "}
-                                        <span className="text-gray-200 font-medium">{offer.seller_name}</span>
-                                    </p>
-
-                                    <p className="text-sm text-gray-400">
-                                        Offer Price:{" "}
-                                        <span className="text-xl md:text-2xl font-semibold text-green-400">
-                                            ₱{offer.offer_price}
-                                        </span>
-                                    </p>
-
-                                    <p className="text-sm text-gray-400">
-                                        Status:{" "}
+                                <div className="bg-gray-900/50 backdrop-blur-lg rounded-2xl shadow-[6px_6px_12px_rgba(0,0,0,0.6),-6px_-6px_12px_rgba(255,255,255,0.05)] p-6 flex flex-col gap-4 hover:shadow-[inset_2px_2px_6px_rgba(255,255,255,0.05),inset_-2px_-2px_6px_rgba(0,0,0,0.4)] transition transform hover:-translate-y-1">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <img
+                                                src={`https://express-backend-r2by.onrender.com/api/auth/items/${offer.id}/image`}
+                                                alt={offer.item_name}
+                                                loading="lazy"
+                                                className="w-16 h-16 object-cover rounded-xl hover:scale-105 transition-transform duration-500"
+                                                onError={(e) => {
+                                                    (e.target as HTMLImageElement).src = imagePlaceholder;
+                                                }}
+                                            />
+                                            <h3 className="text-lg md:text-xl font-bold text-purple-300">{offer.item_name}</h3>
+                                        </div>
                                         <span
                                             className={`px-3 py-1 rounded-full text-xs font-bold shadow-md ${offer.status === "accepted"
                                                 ? "bg-green-700 text-green-200"
@@ -137,18 +130,35 @@ export const MyOffers = () => {
                                         >
                                             {offer.status.toUpperCase()}
                                         </span>
+                                    </div>
+
+                                    <p className="text-sm text-gray-400">
+                                        Seller: <span className="text-gray-200 font-medium">{offer.seller_name}</span>
+                                    </p>
+
+                                    <p className="text-sm text-gray-400">
+                                        Offer Price:{" "}
+                                        <span className="text-xl md:text-2xl font-semibold text-green-400">
+                                            ₱{offer.offer_price}
+                                        </span>
                                     </p>
 
                                     {offer.created_at && (
                                         <p className="text-xs text-gray-500 italic">
-                                            Made on {new Date(offer.created_at).toLocaleDateString()} at{" "}
-                                            {new Date(offer.created_at).toLocaleTimeString()}
+                                            Made on{" "}
+                                            {new Date(offer.created_at).toLocaleDateString("en-PH", {
+                                                timeZone: "Asia/Manila",
+                                            })}{" "}
+                                            at{" "}
+                                            {new Date(offer.created_at).toLocaleTimeString("en-PH", {
+                                                timeZone: "Asia/Manila",
+                                            })}
                                         </p>
                                     )}
 
                                     <button
                                         onClick={() => deleteOffer(offer.id)}
-                                        className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition self-start md:self-end"
+                                        className="mt-4 px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-300 ease-in-out bg-linear-to-r from-red-600 to-pink-600 text-white shadow hover:shadow-red-500/40 hover:scale-105 self-start md:self-end"
                                     >
                                         Delete Offer
                                     </button>

@@ -39,22 +39,23 @@ export const Navbar = ({ user, setUser }: NavbarProps) => {
     }, [isOpen]);
 
     const linkClasses = (isActive: boolean) =>
-        `flex items-center gap-2 px-4 py-2 rounded-lg transition font-medium ${isActive
+        `flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ease-in-out font-medium ${isActive
             ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md"
-            : "text-gray-300 hover:bg-gray-700 hover:text-white"
+            : "text-gray-300 hover:bg-gray-800 hover:text-white"
         }`;
 
     if (user) {
         return (
             <>
-                <aside className="hidden lg:flex fixed top-0 left-0 h-screen w-64 bg-black/80 backdrop-blur-md border-r border-gray-700 flex-col z-50">
+                {/* Desktop Sidebar */}
+                <aside className="hidden lg:flex fixed top-0 left-0 h-screen w-64 bg-gray-900 backdrop-blur-md border-r border-gray-700 flex-col z-50 shadow-lg">
                     <div className="p-6 text-center border-b border-gray-700">
                         <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-pink-500 flex items-center justify-center gap-2">
                             <SiExpertsexchange className="text-purple-400" /> Auction_Xpress
                         </h1>
                     </div>
 
-                    <nav className="flex-1 p-4 space-y-2">
+                    <nav className="flex-1 p-4 space-y-3">
                         <NavLink to="/dashboard" className={({ isActive }) => linkClasses(isActive)}>
                             <MdDashboard /> Dashboard
                         </NavLink>
@@ -73,16 +74,16 @@ export const Navbar = ({ user, setUser }: NavbarProps) => {
                         <span className="font-semibold">{user.name}</span>
                         <button
                             onClick={handleLogout}
-                            className="flex items-center gap-1 px-3 py-2 rounded-lg bg-linear-to-r from-red-600 to-pink-600 hover:scale-105 transition shadow-md"
+                            className="flex items-center gap-1 px-3 py-2 rounded-lg bg-linear-to-r from-red-600 to-pink-600 hover:scale-105 transition-all duration-300 ease-in-out shadow-md"
                         >
                             <HiOutlineLogout /> Logout
                         </button>
                     </div>
                 </aside>
 
-                {/* Mobile/Tablet navbar */}
-                <nav className="lg:hidden fixed top-0 w-full bg-black/80 backdrop-blur-md border-b border-gray-700 flex items-center justify-between p-4 z-50">
-                    <button onClick={() => setIsOpen(!isOpen)} className="text-white">
+                {/* Mobile Navbar */}
+                <nav className="lg:hidden fixed top-0 w-full bg-gray-900 backdrop-blur-md border-b border-gray-700 flex items-center justify-between p-4 z-50 shadow-md">
+                    <button onClick={() => setIsOpen(!isOpen)} className="text-white transition-transform duration-300 hover:scale-110">
                         {isOpen ? <HiOutlineX size={28} /> : <HiOutlineMenu size={28} />}
                     </button>
                     <h1 className="text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-pink-500 font-bold flex items-center gap-2">
@@ -90,18 +91,16 @@ export const Navbar = ({ user, setUser }: NavbarProps) => {
                     </h1>
                 </nav>
 
-                {/* Drawer for mobile/tablet */}
+                {/* Mobile Drawer */}
                 {isOpen && (
-                    <div className="fixed inset-0 top-15 z-40 flex">
-                        {/* Backdrop overlay */}
+                    <div className="fixed inset-0 mt-14 z-40 flex">
                         <div
                             className="fixed inset-0 bg-black/50 backdrop-blur-sm"
                             onClick={() => setIsOpen(false)}
                         ></div>
 
-                        {/* Drawer */}
-                        <aside className="relative z-50 w-64 bg-black/90 backdrop-blur-md border-r border-gray-700 flex flex-col transform transition-transform duration-300">
-                            <nav className="flex-1 p-4 space-y-2">
+                        <aside className="relative z-50 w-64 bg-gray-900 backdrop-blur-md border-r border-gray-700 flex flex-col transform transition-transform duration-300 ease-in-out shadow-lg">
+                            <nav className="flex-1 p-4 space-y-3">
                                 <NavLink to="/dashboard" onClick={() => setIsOpen(false)} className={({ isActive }) => linkClasses(isActive)}>
                                     <MdDashboard /> Dashboard
                                 </NavLink>
@@ -120,7 +119,7 @@ export const Navbar = ({ user, setUser }: NavbarProps) => {
                                 <span className="font-semibold">{user.name}</span>
                                 <button
                                     onClick={handleLogout}
-                                    className="flex items-center gap-1 px-3 py-2 rounded-lg bg-linear-to-r from-red-600 to-pink-600 hover:scale-105 transition shadow-md"
+                                    className="flex items-center gap-1 px-3 py-2 rounded-lg bg-linear-to-r from-red-600 to-pink-600 hover:scale-105 transition-all duration-300 ease-in-out shadow-md"
                                 >
                                     <HiOutlineLogout /> Logout
                                 </button>
@@ -134,7 +133,7 @@ export const Navbar = ({ user, setUser }: NavbarProps) => {
 
     // Public navbar (not logged in)
     return (
-        <nav className="p-3 fixed top-0 left-0 w-full flex items-center z-50 bg-black/70 backdrop-blur-md border-b border-gray-700">
+        <nav className="p-3 fixed top-0 left-0 w-full flex items-center z-50 bg-gray-900 backdrop-blur-md border-b border-gray-700 shadow-md">
             <div className="flex items-center justify-between w-full max-w-6xl mx-auto">
                 <NavLink
                     to="/"
@@ -153,7 +152,7 @@ export const Navbar = ({ user, setUser }: NavbarProps) => {
                     <NavLink
                         to="/login"
                         className={({ isActive }) =>
-                            `px-3 py-2 flex items-center gap-1 rounded-lg transition ${isActive
+                            `px-3 py-2 flex items-center gap-1 rounded-lg transition-all duration-300 ease-in-out ${isActive
                                 ? "bg-linear-to-r from-purple-600 to-indigo-600 text-white shadow-md"
                                 : "hover:scale-105 hover:text-purple-400"
                             }`
@@ -164,7 +163,7 @@ export const Navbar = ({ user, setUser }: NavbarProps) => {
                     <NavLink
                         to="/register"
                         className={({ isActive }) =>
-                            `px-3 py-2 flex items-center gap-1 rounded-lg transition ${isActive
+                            `px-3 py-2 flex items-center gap-1 rounded-lg transition-all duration-300 ease-in-out ${isActive
                                 ? "bg-linear-to-r from-purple-600 to-indigo-600 text-white shadow-md"
                                 : "hover:scale-105 hover:text-purple-400"
                             }`

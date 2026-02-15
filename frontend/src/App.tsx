@@ -47,9 +47,13 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-linear-to-tr from-black/50 to-purple-500/30 flex items-center justify-center text-white">
-        <p className="transition-all duration-300 ease-in-out animate-bounce text-2xl font-bold">
-          Loading...
+      <div className="min-h-screen flex flex-col items-center justify-center bg-linear-to-tr from-black/70 to-purple-600/30 text-white">
+        {/* Spinner */}
+        <div className="w-20 h-20 rounded-full border-4 border-t-transparent border-purple-400 animate-spin shadow-[6px_6px_12px_rgba(0,0,0,0.6),-6px_-6px_12px_rgba(255,255,255,0.05)]"></div>
+
+        {/* Text */}
+        <p className="mt-6 text-xl font-semibold tracking-wide text-transparent bg-clip-text bg-linear-to-r from-purple-300 to-pink-400 animate-pulse">
+          Preparing Auction_Xpress...
         </p>
       </div>
     );

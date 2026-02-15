@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import api from "../../../services/api";
 import imagePlaceholder from '../../../assets/imagePlaceholder.jpg';
+import { FaBoxOpen, FaCoins } from "react-icons/fa";
+import { RiAuctionFill } from "react-icons/ri";
 
 interface Item {
     id: number;
@@ -128,68 +130,99 @@ export const Dashboard = () => {
             {/* Page Title */}
             <h1 className="text-4xl font-extrabold mb-10 text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-pink-500">
                 My Dashboard
-            </h1>      {/* Summary Cards */}
+            </h1>
+
+            {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                 {isLoadingDashboard ? (
                     Array.from({ length: 3 }).map((_, i) => (
-                        <div key={i} className="bg-gray-800 p-6 rounded-xl shadow-lg animate-pulse">
-                            <div className="h-6 bg-gray-700 rounded w-1/2 mb-4"></div>
-                            <div className="h-10 bg-gray-700 rounded w-1/3"></div>
+                        <div
+                            key={i}
+                            className="bg-gray-900/70 backdrop-blur-md p-6 rounded-2xl animate-pulse 
+          shadow-[inset_2px_2px_6px_rgba(255,255,255,0.05),inset_-2px_-2px_6px_rgba(0,0,0,0.4)] transition-all duration-300"
+                        >
+                            <div className="h-6 bg-gray-800/70 rounded w-1/2 mb-4"></div>
+                            <div className="h-10 bg-gray-800/70 rounded w-1/3"></div>
                         </div>
                     ))
                 ) : (
                     <>
-                        <div className="bg-linear-to-r from-purple-600 to-indigo-600 p-6 rounded-xl shadow-lg hover:shadow-purple-500/40 transition transform hover:-translate-y-1">
-                            <p className="text-lg font-semibold">Sold Items</p>
-                            <p className="text-3xl font-bold">{soldItems}</p>
+                        <div className="bg-linear-to-r from-purple-600 to-indigo-600 p-6 rounded-2xl 
+        shadow-lg hover:shadow-[0_0_25px_rgba(128,0,255,0.5)] 
+        transition-transform duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]">
+                            <p className="text-lg flex items-center font-semibold text-gray-100">
+                                <RiAuctionFill className="mr-2" /> Sold Items
+                            </p>
+                            <p className="text-3xl font-bold text-white">{soldItems}</p>
                         </div>
-                        <div className="bg-linear-to-r from-blue-600 to-cyan-600 p-6 rounded-xl shadow-lg hover:shadow-blue-500/40 transition transform hover:-translate-y-1">
-                            <p className="text-lg font-semibold">Total Items</p>
-                            <p className="text-3xl font-bold">{items.length}</p>
+
+                        <div className="bg-linear-to-r from-blue-600 to-cyan-600 p-6 rounded-2xl 
+        shadow-lg hover:shadow-[0_0_25px_rgba(0,200,255,0.5)] 
+        transition-transform duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]">
+                            <p className="text-lg flex items-center font-semibold text-gray-100">
+                                <FaBoxOpen className="mr-2" /> Total Items
+                            </p>
+                            <p className="text-3xl font-bold text-white">{items.length}</p>
                         </div>
-                        <div className="bg-linear-to-r from-pink-600 to-red-600 p-6 rounded-xl shadow-lg hover:shadow-pink-500/40 transition transform hover:-translate-y-1">
-                            <p className="text-lg font-semibold">Profit This Month</p>
-                            <p className="text-3xl font-bold">₱{profit}</p>
+
+                        <div className="bg-linear-to-r from-pink-600 to-red-600 p-6 rounded-2xl 
+        shadow-lg hover:shadow-[0_0_25px_rgba(255,0,128,0.5)] 
+        transition-transform duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]">
+                            <p className="text-lg flex items-center font-semibold text-gray-100">
+                                <FaCoins className="mr-2" /> Profit
+                            </p>
+                            <p className="text-3xl font-bold text-white">₱{profit}</p>
                         </div>
                     </>
                 )}
             </div>
 
-            {errorMessage && (
-                <div className="mb-4 p-3 bg-red-600 text-white rounded-lg shadow-md">{errorMessage}</div>
-            )}
+            {
+                errorMessage && (
+                    <div className="mb-4 p-3 bg-red-600 text-white rounded-lg shadow-md">{errorMessage}</div>
+                )
+            }
 
             {/* Item Cards */}
-            <h2 className="text-2xl font-semibold mb-6">My Items</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-purple-300">My Items</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {isLoadingDashboard ? (
                     Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} className="bg-gray-800/80 border border-gray-700 rounded-xl shadow-lg p-5 animate-pulse">
-                            <div className="w-full h-48 bg-gray-700 rounded mb-4"></div>
-                            <div className="h-6 bg-gray-700 rounded w-3/4 mb-2"></div>
-                            <div className="h-4 bg-gray-700 rounded w-1/2 mb-2"></div>
-                            <div className="h-4 bg-gray-700 rounded w-1/3 mb-4"></div>
-                            <div className="h-10 bg-gray-700 rounded"></div>
+                        <div
+                            key={i}
+                            className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-5 animate-pulse 
+          shadow-[inset_2px_2px_6px_rgba(255,255,255,0.05),inset_-2px_-2px_6px_rgba(0,0,0,0.4)] transition-all duration-300"
+                        >
+                            <div className="w-full h-48 bg-gray-800/70 rounded-xl mb-4"></div>
+                            <div className="h-6 bg-gray-800/70 rounded w-3/4 mb-2"></div>
+                            <div className="h-4 bg-gray-800/70 rounded w-1/2 mb-2"></div>
+                            <div className="h-4 bg-gray-800/70 rounded w-1/3 mb-4"></div>
+                            <div className="h-10 bg-gray-800/70 rounded"></div>
                         </div>
                     ))
                 ) : items.length === 0 ? (
                     <p className="text-gray-400 col-span-full text-center">No items found.</p>
                 ) : (
                     items.map((item) => (
-                        <div key={item.id} className="bg-gray-800/80 border border-gray-700 rounded-xl shadow-lg overflow-hidden flex flex-col hover:shadow-purple-500/30 hover:-translate-y-2 transition transform">
+                        <div
+                            key={item.id}
+                            className="bg-gray-900/70 backdrop-blur-md rounded-2xl overflow-hidden flex flex-col 
+          shadow-lg hover:shadow-[0_0_20px_rgba(128,0,128,0.4)] 
+          transition-transform duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]"
+                        >
                             <img
                                 src={`https://express-backend-r2by.onrender.com/api/auth/items/${item.id}/image` || imagePlaceholder}
                                 alt={item.name}
-                                className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                                className="w-full h-48 object-cover transition-transform duration-500 hover:scale-105"
                                 onError={(e) => {
                                     (e.target as HTMLImageElement).src = imagePlaceholder;
                                 }}
                             />
                             <div className="p-5 flex flex-col grow">
                                 <h3 className="text-lg font-bold mb-1 text-purple-300">{item.name}</h3>
-                                <p className="text-sm text-gray-300 mb-2 line-clamp-2">{item.description}</p>
-                                <p className="text-sm">Starting Price: ₱{item.starting_price}</p>
-                                <p className="text-sm">
+                                <p className="text-sm text-gray-200 mb-2 line-clamp-2">{item.description}</p>
+                                <p className="text-sm text-gray-300">Starting Price: ₱{item.starting_price}</p>
+                                <p className="text-sm text-gray-300">
                                     Status:{" "}
                                     <span className={item.status ? "text-green-400" : "text-yellow-400"}>
                                         {item.status ? "Sold" : "Taking Offers"}
@@ -197,21 +230,27 @@ export const Dashboard = () => {
                                     | Offers: {item.offer_count}
                                 </p>
                                 {item.current_price && (
-                                    <p className="text-sm">Sold Price: ₱{item.current_price}</p>
+                                    <p className="text-sm text-gray-300">Sold Price: ₱{item.current_price}</p>
                                 )}
 
                                 {/* Action buttons */}
                                 <div className="mt-4 flex justify-around gap-3">
                                     <button
                                         onClick={() => deleteItem(item.id)}
-                                        className="flex-1 px-4 py-2 bg-red-600 rounded-lg hover:bg-red-700 transition font-semibold"
+                                        className="flex-1 px-4 py-2 rounded-lg font-semibold 
+                bg-linear-to-r from-red-600 to-red-500 text-white 
+                shadow-md hover:shadow-[0_0_12px_rgba(255,0,0,0.6)] 
+                transition-all duration-300 ease-in-out hover:scale-105"
                                     >
                                         Delete
                                     </button>
                                     {!item.status && (
                                         <button
                                             onClick={() => viewOffers(item.id)}
-                                            className="flex-1 px-4 py-2 bg-purple-600 rounded-lg hover:bg-purple-700 transition font-semibold"
+                                            className="flex-1 px-4 py-2 rounded-lg font-semibold 
+                  bg-linear-to-r from-purple-600 to-indigo-600 text-white 
+                  shadow-md hover:shadow-[0_0_12px_rgba(128,0,255,0.6)] 
+                  transition-all duration-300 ease-in-out hover:scale-105"
                                         >
                                             View Offers
                                         </button>
@@ -223,103 +262,144 @@ export const Dashboard = () => {
                 )}
             </div>
 
-            {/* Offers Section */}
-            {selectedItem && (
-                <div className="mt-12">
-                    <h2 className="text-2xl font-bold mb-6 text-purple-300">
-                        Offers for Item {selectedItem}
-                    </h2>
+            {/* Offers Modal */}
+            {
+                selectedItem && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-2">
+                        <div className="bg-gray-900/70 backdrop-blur-xl rounded-2xl w-full max-w-3xl relative 
+                    max-h-[80%] overflow-y-auto flex flex-col 
+                    shadow-[8px_8px_16px_rgba(0,0,0,0.6),-8px_-8px_16px_rgba(255,255,255,0.05)]">
 
-                    {isLoadingOffers ? (
-                        // Skeleton placeholders
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {Array.from({ length: 2 }).map((_, i) => (
-                                <div
-                                    key={i}
-                                    className="bg-gray-800/40 border border-gray-700 rounded-xl shadow-lg p-5 animate-pulse"
+                            <div className="sticky top-0 bg-gray-900/60 backdrop-blur-md z-10 p-6 flex items-center justify-between 
+                      shadow-[inset_2px_2px_6px_rgba(255,255,255,0.05),inset_-2px_-2px_6px_rgba(0,0,0,0.4)] rounded-t-2xl">
+                                <h2 className="text-2xl font-bold text-purple-300">
+                                    Offers for Item {selectedItem}
+                                </h2>
+                                <button
+                                    onClick={() => setSelectedItem(null)}
+                                    className="w-8 h-8 flex items-center justify-center rounded-full 
+                     bg-gray-800/70 backdrop-blur-sm 
+                     shadow-[4px_4px_8px_rgba(0,0,0,0.5),-4px_-4px_8px_rgba(255,255,255,0.05)] 
+                     text-gray-300 hover:text-purple-300 transition"
                                 >
-                                    <div className="h-6 bg-gray-700 rounded w-2/3 mb-3"></div>
-                                    <div className="h-4 bg-gray-700 rounded w-1/2 mb-2"></div>
-                                    <div className="h-4 bg-gray-700 rounded w-1/3 mb-4"></div>
-                                    <div className="h-10 bg-gray-700 rounded"></div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : offers.length === 0 ? (
-                        // Empty state
-                        <div className="flex flex-col items-center justify-center text-center mt-10">
-                            <div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center mb-4">
-                                <span className="text-3xl">🤝</span>
+                                    ✕
+                                </button>
                             </div>
-                            <p className="text-gray-400 italic text-lg">No offers yet.</p>
-                            <p className="text-gray-500 text-sm mt-2">
-                                Be the first to make an offer!
-                            </p>
-                        </div>
-                    ) : (
-                        // Offers list
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {offers.map((offer: Offer) => (
-                                <div
-                                    key={offer.id}
-                                    className="bg-gray-800/80 backdrop-blur-md border border-gray-700 rounded-xl shadow-lg p-5 flex flex-col space-y-3 hover:shadow-purple-500/30 transition transform hover:-translate-y-1"
-                                >
-                                    {/* Header: buyer + status */}
-                                    <div className="flex justify-between items-center">
-                                        <span className="font-semibold text-purple-300">
-                                            {offer.buyer_name}
-                                        </span>
-                                        <span
-                                            className={`font-medium ${offer.status === "accepted"
-                                                ? "text-green-400"
-                                                : offer.status === "declined"
-                                                    ? "text-red-400"
-                                                    : "text-yellow-400"
-                                                }`}
-                                        >
-                                            {offer.status.toUpperCase()}
-                                        </span>
+
+                            {/* Modal Content */}
+                            <div className="p-6 space-y-6">
+                                {isLoadingOffers ? (
+                                    // Skeleton placeholders
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {Array.from({ length: 2 }).map((_, i) => (
+                                            <div
+                                                key={i}
+                                                className="bg-gray-800/60 backdrop-blur-md rounded-xl p-5 animate-pulse 
+                           shadow-[inset_2px_2px_6px_rgba(255,255,255,0.05),inset_-2px_-2px_6px_rgba(0,0,0,0.4)]"
+                                            >
+                                                <div className="h-6 bg-gray-700/70 rounded w-2/3 mb-3"></div>
+                                                <div className="h-4 bg-gray-700/70 rounded w-1/2 mb-2"></div>
+                                                <div className="h-4 bg-gray-700/70 rounded w-1/3 mb-4"></div>
+                                                <div className="h-10 bg-gray-700/70 rounded"></div>
+                                            </div>
+                                        ))}
                                     </div>
-
-                                    {/* Offer price */}
-                                    <p className="text-gray-300 text-sm">
-                                        Offered:{" "}
-                                        <span className="font-bold text-white text-lg">
-                                            ₱{offer.offer_price}
-                                        </span>
-                                    </p>
-
-                                    {/* Timestamp */}
-                                    {offer.created_at && (
-                                        <p className="text-xs text-gray-500 italic">
-                                            Made on {new Date(offer.created_at).toLocaleDateString()} at{" "}
-                                            {new Date(offer.created_at).toLocaleTimeString()}
-                                        </p>
-                                    )}
-
-                                    {/* Action buttons only if offer is still active */}
-                                    {offer.status === "pending" && (
-                                        <div className="flex gap-3 mt-2">
-                                            <button
-                                                onClick={() => respondToOffer(offer.id, "accept")}
-                                                className="flex-1 px-3 py-2 bg-green-600 rounded-lg hover:bg-green-700 transition font-semibold text-sm"
-                                            >
-                                                Accept
-                                            </button>
-                                            <button
-                                                onClick={() => respondToOffer(offer.id, "decline")}
-                                                className="flex-1 px-3 py-2 bg-red-600 rounded-lg hover:bg-red-700 transition font-semibold text-sm"
-                                            >
-                                                Decline
-                                            </button>
+                                ) : offers.length === 0 ? (
+                                    // Empty state
+                                    <div className="flex flex-col items-center justify-center text-center mt-10">
+                                        <div className="w-20 h-20 rounded-full bg-gray-800/70 backdrop-blur-md flex items-center justify-center mb-4 
+                            shadow-[4px_4px_8px_rgba(0,0,0,0.5),-4px_-4px_8px_rgba(255,255,255,0.05)]">
+                                            <span className="text-3xl">🤝</span>
                                         </div>
-                                    )}
-                                </div>
-                            ))}
+                                        <p className="text-gray-200 italic text-lg">No offers yet.</p>
+                                        <p className="text-gray-400 text-sm mt-2">
+                                            Be the first to make an offer!
+                                        </p>
+                                    </div>
+                                ) : (
+                                    // Offers list
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {offers.map((offer: Offer) => (
+                                            <div
+                                                key={offer.id}
+                                                className="bg-gray-800/70 backdrop-blur-md rounded-xl p-5 flex flex-col space-y-3 
+                           shadow-[6px_6px_12px_rgba(0,0,0,0.5),-6px_-6px_12px_rgba(255,255,255,0.05)] 
+                           hover:shadow-[inset_2px_2px_6px_rgba(255,255,255,0.05),inset_-2px_-2px_6px_rgba(0,0,0,0.4)] 
+                           transition transform hover:-translate-y-1"
+                                            >
+                                                {/* Header: buyer + status */}
+                                                <div className="flex justify-between items-center">
+                                                    <span className="font-semibold text-purple-300">
+                                                        {offer.buyer_name}
+                                                    </span>
+                                                    <span
+                                                        className={`font-medium ${offer.status === "accepted"
+                                                            ? "text-green-400"
+                                                            : offer.status === "declined"
+                                                                ? "text-red-400"
+                                                                : "text-yellow-400"
+                                                            }`}
+                                                    >
+                                                        {offer.status.toUpperCase()}
+                                                    </span>
+                                                </div>
+
+                                                {/* Offer price */}
+                                                <p className="text-gray-200 text-sm">
+                                                    Offered:{" "}
+                                                    <span className="font-bold text-white text-lg">
+                                                        ₱{offer.offer_price}
+                                                    </span>
+                                                </p>
+
+                                                {/* Timestamp */}
+                                                {offer.created_at && (
+                                                    <p className="text-xs text-gray-500 italic">
+                                                        Made on{" "}
+                                                        {new Date(offer.created_at).toLocaleDateString("en-PH", {
+                                                            timeZone: "Asia/Manila",
+                                                        })}{" "}
+                                                        at{" "}
+                                                        {new Date(offer.created_at).toLocaleTimeString("en-PH", {
+                                                            timeZone: "Asia/Manila",
+                                                        })}
+                                                    </p>
+                                                )}
+
+                                                {/* Action buttons */}
+                                                {offer.status === "pending" && (
+                                                    <div className="flex gap-3 mt-2">
+                                                        <button
+                                                            onClick={() => respondToOffer(offer.id, "accept")}
+                                                            className="flex-1 px-3 py-2 rounded-lg font-semibold text-sm 
+                                 bg-gray-800/70 text-green-400 backdrop-blur-sm
+                                 shadow-[0_4px_8px_rgba(0,0,0,0.5),-4px_-4px_8px_rgba(255,255,255,0.05)] 
+                                 hover:shadow-[inset_0_2px_6px_rgba(255,255,255,0.05),inset_0_-2px_6px_rgba(0,0,0,0.4)] 
+                                 transition"
+                                                        >
+                                                            Accept
+                                                        </button>
+                                                        <button
+                                                            onClick={() => respondToOffer(offer.id, "decline")}
+                                                            className="flex-1 px-3 py-2 rounded-lg font-semibold text-sm 
+                                 bg-gray-800/70 text-red-400 backdrop-blur-sm
+                                 shadow-[0_4px_8px_rgba(0,0,0,0.5),-4px_-4px_8px_rgba(255,255,255,0.05)] 
+                                 hover:shadow-[inset_0_2px_6px_rgba(255,255,255,0.05),inset_0_-2px_6px_rgba(0,0,0,0.4)] 
+                                 transition"
+                                                        >
+                                                            Decline
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    )}
-                </div>
-            )}
-        </div>
+                    </div>
+                )
+            }
+        </div >
     );
 };
