@@ -158,7 +158,7 @@ export default function Marketplace() {
 
                                     {!item.status && (
                                         <div className="mt-auto">
-                                            <div className="flex items-center gap-2 mb-3 w-full justify-between">
+                                            <div className="flex flex-col sm:flex-row items-center gap-2 mb-3 w-full justify-between">
                                                 <input
                                                     type="number"
                                                     placeholder="Enter your offer"
@@ -169,12 +169,12 @@ export default function Marketplace() {
                                                             [item.id]: Number(e.target.value),
                                                         })
                                                     }
-                                                    className="p-2 text-white/80 rounded-lg border border-gray-600 bg-gray-900 
+                                                    className="p-2 w-full text-white/80 rounded-lg border border-gray-600 bg-gray-900 
                     focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
                                                 />
                                                 <button
                                                     onClick={() => makeOffer(item.id, offerInput[item.id])}
-                                                    className="px-4 py-2 bg-linear-to-r from-purple-600 to-indigo-600 
+                                                    className="px-4 w-full py-2 bg-linear-to-r from-purple-600 to-indigo-600 
                     rounded-lg hover:scale-105 transition font-medium shadow-lg"
                                                 >
                                                     Submit Offer
