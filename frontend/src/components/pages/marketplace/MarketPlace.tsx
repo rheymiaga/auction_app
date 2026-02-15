@@ -91,7 +91,7 @@ export default function Marketplace() {
     };
 
     return (
-        <div className="flex-1 p-8 mt-10 lg:mt-0 transition-all duration-300 transform text-white bg-linear-to-br from-gray-900 via-black to-gray-800 min-h-screen">
+        <div className="flex-1 py-8 px-3 mt-10 lg:mt-0 transition-all duration-300 transform text-white bg-linear-to-br from-gray-900 via-black to-gray-800 min-h-screen">
             {/* Header */}
             <div className="mb-10 flex flex-col md:flex-row items-center justify-between gap-4 border-b border-gray-700 pb-4">
                 <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-pink-500">

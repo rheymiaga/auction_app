@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../../services/api";
-import imagePlaceholder from '../../../assets/imagePlaceholder.jpg'
+import imagePlaceholder from '../../../assets/imagePlaceholder.jpg';
 
 interface Item {
     id: number;
@@ -11,7 +11,6 @@ interface Item {
     status: boolean;
     offer_count: number;
     img_url?: string | null;
-
     ownerId: number;
     offers?: Offer[];
     active_offer_count?: number;
@@ -22,6 +21,7 @@ interface Offer {
     buyer_name: string;
     offer_price: number;
     status: "pending" | "accepted" | "declined";
+    created_at?: string;
 }
 
 interface DashboardResponse {
@@ -68,7 +68,18 @@ export const Dashboard = () => {
         try {
             setIsLoadingOffers(true);
             const res = await api.get<Offer[]>(`/api/auth/items/${itemId}/offers`);
-            setOffers(res.data);
+
+            const highestOffersMap = res.data.reduce((acc: Record<string, Offer>, offer) => {
+                const key = offer.buyer_name;
+                if (!acc[key] || offer.offer_price > acc[key].offer_price) {
+                    acc[key] = offer;
+                }
+                return acc;
+            }, {});
+
+            const highestOffers = Object.values(highestOffersMap);
+
+            setOffers(highestOffers);
             setSelectedItem(itemId);
             setErrorMessage(null);
         } catch (err: any) {
@@ -93,14 +104,13 @@ export const Dashboard = () => {
                     const refreshed = await api.get<Offer[]>(`/api/auth/items/${selectedItem}/offers`);
                     setOffers(refreshed.data);
                 }
-                await fetchDashboard()
+                await fetchDashboard();
             }
         } catch (err: any) {
             console.error("Error responding to offer:", err.response?.data || err.message);
             setErrorMessage("Failed to respond to offer.");
         }
     };
-
 
     const deleteItem = async (itemId: number) => {
         try {
@@ -118,34 +128,25 @@ export const Dashboard = () => {
             {/* Page Title */}
             <h1 className="text-4xl font-extrabold mb-10 text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-pink-500">
                 My Dashboard
-            </h1>
-
-            {/* Summary Cards */}
+            </h1>      {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                 {isLoadingDashboard ? (
                     Array.from({ length: 3 }).map((_, i) => (
-                        <div
-                            key={i}
-                            className="bg-gray-800 p-6 rounded-xl shadow-lg animate-pulse"
-                        >
+                        <div key={i} className="bg-gray-800 p-6 rounded-xl shadow-lg animate-pulse">
                             <div className="h-6 bg-gray-700 rounded w-1/2 mb-4"></div>
                             <div className="h-10 bg-gray-700 rounded w-1/3"></div>
                         </div>
                     ))
                 ) : (
                     <>
-                        {/* Sold Items */}
                         <div className="bg-linear-to-r from-purple-600 to-indigo-600 p-6 rounded-xl shadow-lg hover:shadow-purple-500/40 transition transform hover:-translate-y-1">
                             <p className="text-lg font-semibold">Sold Items</p>
                             <p className="text-3xl font-bold">{soldItems}</p>
                         </div>
-
-                        {/* Total Items */}
                         <div className="bg-linear-to-r from-blue-600 to-cyan-600 p-6 rounded-xl shadow-lg hover:shadow-blue-500/40 transition transform hover:-translate-y-1">
                             <p className="text-lg font-semibold">Total Items</p>
                             <p className="text-3xl font-bold">{items.length}</p>
                         </div>
-                        {/* Monthly Profit */}
                         <div className="bg-linear-to-r from-pink-600 to-red-600 p-6 rounded-xl shadow-lg hover:shadow-pink-500/40 transition transform hover:-translate-y-1">
                             <p className="text-lg font-semibold">Profit This Month</p>
                             <p className="text-3xl font-bold">₱{profit}</p>
@@ -155,9 +156,7 @@ export const Dashboard = () => {
             </div>
 
             {errorMessage && (
-                <div className="mb-4 p-3 bg-red-600 text-white rounded-lg shadow-md">
-                    {errorMessage}
-                </div>
+                <div className="mb-4 p-3 bg-red-600 text-white rounded-lg shadow-md">{errorMessage}</div>
             )}
 
             {/* Item Cards */}
@@ -165,10 +164,7 @@ export const Dashboard = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {isLoadingDashboard ? (
                     Array.from({ length: 6 }).map((_, i) => (
-                        <div
-                            key={i}
-                            className="bg-gray-800/80 backdrop-blur-md border border-gray-700 rounded-xl shadow-lg p-5 animate-pulse"
-                        >
+                        <div key={i} className="bg-gray-800/80 border border-gray-700 rounded-xl shadow-lg p-5 animate-pulse">
                             <div className="w-full h-48 bg-gray-700 rounded mb-4"></div>
                             <div className="h-6 bg-gray-700 rounded w-3/4 mb-2"></div>
                             <div className="h-4 bg-gray-700 rounded w-1/2 mb-2"></div>
@@ -180,10 +176,7 @@ export const Dashboard = () => {
                     <p className="text-gray-400 col-span-full text-center">No items found.</p>
                 ) : (
                     items.map((item) => (
-                        <div
-                            key={item.id}
-                            className="bg-gray-800/80 backdrop-blur-md border border-gray-700 rounded-xl shadow-lg overflow-hidden flex flex-col hover:shadow-purple-500/30 hover:-translate-y-2 transition transform"
-                        >
+                        <div key={item.id} className="bg-gray-800/80 border border-gray-700 rounded-xl shadow-lg overflow-hidden flex flex-col hover:shadow-purple-500/30 hover:-translate-y-2 transition transform">
                             <img
                                 src={`https://express-backend-r2by.onrender.com/api/auth/items/${item.id}/image` || imagePlaceholder}
                                 alt={item.name}
@@ -192,7 +185,6 @@ export const Dashboard = () => {
                                     (e.target as HTMLImageElement).src = imagePlaceholder;
                                 }}
                             />
-
                             <div className="p-5 flex flex-col grow">
                                 <h3 className="text-lg font-bold mb-1 text-purple-300">{item.name}</h3>
                                 <p className="text-sm text-gray-300 mb-2 line-clamp-2">{item.description}</p>
@@ -237,61 +229,97 @@ export const Dashboard = () => {
                     <h2 className="text-2xl font-bold mb-6 text-purple-300">
                         Offers for Item {selectedItem}
                     </h2>
+
                     {isLoadingOffers ? (
-                        Array.from({ length: 2 }).map((_, i) => (
-                            <div
-                                key={i}
-                                className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg p-5 animate-pulse"
-                            >
-                                <div className="h-6 bg-gray-700 rounded w-1/2 mb-3"></div>
-                                <div className="h-4 bg-gray-700 rounded w-1/3 mb-2"></div>
-                                <div className="h-4 bg-gray-700 rounded w-1/4 mb-4"></div>
-                                <div className="h-10 bg-gray-700 rounded"></div>
-                            </div>
-                        ))
+                        // Skeleton placeholders
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {Array.from({ length: 2 }).map((_, i) => (
+                                <div
+                                    key={i}
+                                    className="bg-gray-800/40 border border-gray-700 rounded-xl shadow-lg p-5 animate-pulse"
+                                >
+                                    <div className="h-6 bg-gray-700 rounded w-2/3 mb-3"></div>
+                                    <div className="h-4 bg-gray-700 rounded w-1/2 mb-2"></div>
+                                    <div className="h-4 bg-gray-700 rounded w-1/3 mb-4"></div>
+                                    <div className="h-10 bg-gray-700 rounded"></div>
+                                </div>
+                            ))}
+                        </div>
                     ) : offers.length === 0 ? (
-                        <p className="text-gray-400">No offers yet.</p>
+                        // Empty state
+                        <div className="flex flex-col items-center justify-center text-center mt-10">
+                            <div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center mb-4">
+                                <span className="text-3xl">🤝</span>
+                            </div>
+                            <p className="text-gray-400 italic text-lg">No offers yet.</p>
+                            <p className="text-gray-500 text-sm mt-2">
+                                Be the first to make an offer!
+                            </p>
+                        </div>
                     ) : (
+                        // Offers list
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {offers.map((offer: Offer) => (
                                 <div
                                     key={offer.id}
-                                    className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg p-5 flex flex-col space-y-3 hover:shadow-purple-500/20 transition"
+                                    className="bg-gray-800/80 backdrop-blur-md border border-gray-700 rounded-xl shadow-lg p-5 flex flex-col space-y-3 hover:shadow-purple-500/30 transition transform hover:-translate-y-1"
                                 >
                                     {/* Header: buyer + status */}
                                     <div className="flex justify-between items-center">
-                                        <span className="font-semibold text-purple-300">{offer.buyer_name}</span>
-                                        <span className={offer.status === "accepted" ? "text-green-400 font-medium"
-                                            : offer.status === "declined"
-                                                ? "text-red-400 font-medium" : "text-yellow-400 font-medium"} >
-                                            {offer.status.toUpperCase()} </span>
+                                        <span className="font-semibold text-purple-300">
+                                            {offer.buyer_name}
+                                        </span>
+                                        <span
+                                            className={`font-medium ${offer.status === "accepted"
+                                                ? "text-green-400"
+                                                : offer.status === "declined"
+                                                    ? "text-red-400"
+                                                    : "text-yellow-400"
+                                                }`}
+                                        >
+                                            {offer.status.toUpperCase()}
+                                        </span>
                                     </div>
 
                                     {/* Offer price */}
-                                    <p className="text-gray-300 text-sm" >
-                                        Offered: <span className="font-bold text-white">₱{offer.offer_price}</span>
+                                    <p className="text-gray-300 text-sm">
+                                        Offered:{" "}
+                                        <span className="font-bold text-white text-lg">
+                                            ₱{offer.offer_price}
+                                        </span>
                                     </p>
+
+                                    {/* Timestamp */}
+                                    {offer.created_at && (
+                                        <p className="text-xs text-gray-500 italic">
+                                            Made on {new Date(offer.created_at).toLocaleDateString()} at{" "}
+                                            {new Date(offer.created_at).toLocaleTimeString()}
+                                        </p>
+                                    )}
 
                                     {/* Action buttons only if offer is still active */}
                                     {offer.status === "pending" && (
                                         <div className="flex gap-3 mt-2">
-                                            <button onClick={() => respondToOffer(offer.id, "accept")}
-                                                className="flex-1 px-3 py-2 bg-green-600 rounded-lg hover:bg-green-700 transition font-semibold text-sm" >
+                                            <button
+                                                onClick={() => respondToOffer(offer.id, "accept")}
+                                                className="flex-1 px-3 py-2 bg-green-600 rounded-lg hover:bg-green-700 transition font-semibold text-sm"
+                                            >
                                                 Accept
                                             </button>
-                                            <button onClick={() => respondToOffer(offer.id, "decline")}
-                                                className="flex-1 px-3 py-2 bg-red-600 rounded-lg hover:bg-red-700 transition font-semibold text-sm" >
+                                            <button
+                                                onClick={() => respondToOffer(offer.id, "decline")}
+                                                className="flex-1 px-3 py-2 bg-red-600 rounded-lg hover:bg-red-700 transition font-semibold text-sm"
+                                            >
                                                 Decline
                                             </button>
-                                        </div>)}
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
-
-                    )
-                    }
-                </div >
+                    )}
+                </div>
             )}
-        </div >
+        </div>
     );
 };

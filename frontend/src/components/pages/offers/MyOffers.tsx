@@ -46,7 +46,6 @@ export const MyOffers = () => {
         }
     };
 
-    // Enhanced Skeleton card for loading state
     const SkeletonCard = () => (
         <div className="relative bg-gray-800/40 border border-gray-700 rounded-xl shadow-lg p-6 animate-pulse">
             <div className="h-6 w-2/3 bg-gray-700 rounded mb-4"></div>

@@ -166,7 +166,7 @@ router.get("/items", async (req: Request, res: Response) => {
 
 // ======================= OFFERS =======================
 
-// Make an offer
+// Make or update an offer
 router.post("/items/:id/offers", protect, async (req: Request, res: Response) => {
     try {
         const { offer_price } = req.body;
@@ -174,15 +174,54 @@ router.post("/items/:id/offers", protect, async (req: Request, res: Response) =>
             return res.status(400).json({ message: "Offer price is required" });
         }
 
-        const offer = await pool.query(
-            `INSERT INTO offers (item_id, buyer_id, offer_price, status, created_at)
-       VALUES ($1, $2, $3, 'pending', CURRENT_TIMESTAMP) RETURNING *`,
-            [req.params.id, (req as any).user.id, offer_price]
+        const itemId = parseInt(req.params.id, 10);
+        const buyerId = (req as any).user.id;
+
+        // Check if the user already has an offer for this item
+        const existingOffer = await pool.query(
+            "SELECT * FROM offers WHERE item_id = $1 AND buyer_id = $2",
+            [itemId, buyerId]
         );
 
-        res.json(offer.rows[0]);
+        if (existingOffer.rows.length > 0) {
+            const currentOffer = existingOffer.rows[0];
+
+            // Only update if the new offer is higher
+            if (Number(offer_price) > Number(currentOffer.offer_price)) {
+                const updatedOffer = await pool.query(
+                    `UPDATE offers 
+           SET offer_price = $1, created_at = CURRENT_TIMESTAMP, status = 'pending'
+           WHERE id = $2
+           RETURNING *`,
+                    [offer_price, currentOffer.id]
+                );
+
+                return res.json({
+                    message: "Offer updated successfully",
+                    offer: updatedOffer.rows[0],
+                });
+            } else {
+                return res.status(400).json({
+                    message: "New offer must be higher than your current offer",
+                    currentOffer,
+                });
+            }
+        } else {
+            // No existing offer, insert a new one
+            const newOffer = await pool.query(
+                `INSERT INTO offers (item_id, buyer_id, offer_price, status, created_at)
+         VALUES ($1, $2, $3, 'pending', CURRENT_TIMESTAMP)
+         RETURNING *`,
+                [itemId, buyerId, offer_price]
+            );
+
+            return res.json({
+                message: "Offer created successfully",
+                offer: newOffer.rows[0],
+            });
+        }
     } catch (err: any) {
-        console.error("Error inserting offer:", err.message);
+        console.error("Error submitting offer:", err.message);
         res.status(500).json({ message: "Failed to submit offer", error: err.message });
     }
 });
