@@ -53,7 +53,7 @@ export const MyOffers = () => {
             <div className="h-4 w-1/2 bg-gray-700 rounded mb-2"></div>
             <div className="h-4 w-1/3 bg-gray-700 rounded mb-2"></div>
             <div className="h-4 w-1/4 bg-gray-700 rounded mb-4"></div>
-            <div className="h-8 w-28 bg-gray-700 rounded justify-self-end"></div>
+            <div className="h-8 w-28 bg-gray-700 rounded md:justify-self-end"></div>
         </div>
     );
 
