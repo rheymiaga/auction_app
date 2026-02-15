@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../../services/api";
-import imagePlaceholder from '../../../assets/imagePlaceholder.jpg'
+import imagePlaceholder from "../../../assets/imagePlaceholder.jpg";
 
 interface Item {
     id: number;
@@ -20,10 +20,33 @@ export default function Marketplace() {
     const [offerInput, setOfferInput] = useState<{ [key: number]: number }>({});
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
 
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            if (!searchQuery.trim()) {
+                setFilteredItems(items);
+            } else {
+                const q = searchQuery.toLowerCase();
+                setFilteredItems(
+                    items.filter(
+                        (item) =>
+                            item.name.toLowerCase().includes(q) ||
+                            item.description.toLowerCase().includes(q) ||
+                            item.owner_name.toLowerCase().includes(q)
+                    )
+                );
+            }
+        }, 300);
+
+        return () => clearTimeout(handler);
+    }, [searchQuery, items]);
+
+    // Fetch items
     useEffect(() => {
         const fetchItems = async () => {
             try {
+                setIsLoading(true);
                 const res = await api.get("/api/auth/items");
                 const now = new Date();
 
@@ -38,27 +61,13 @@ export default function Marketplace() {
                 setFilteredItems(filtered);
             } catch (err: any) {
                 setErrorMessage("Failed to load marketplace items.");
+            } finally {
+                setIsLoading(false);
             }
         };
 
         fetchItems();
     }, []);
-
-    useEffect(() => {
-        if (!searchQuery.trim()) {
-            setFilteredItems(items);
-        } else {
-            const q = searchQuery.toLowerCase();
-            setFilteredItems(
-                items.filter(
-                    (item) =>
-                        item.name.toLowerCase().includes(q) ||
-                        item.description.toLowerCase().includes(q) ||
-                        item.owner_name.toLowerCase().includes(q)
-                )
-            );
-        }
-    }, [searchQuery, items]);
 
     const makeOffer = async (itemId: number, offerPrice: number) => {
         if (!offerPrice || offerPrice <= 0) {
@@ -75,7 +84,8 @@ export default function Marketplace() {
             setErrorMessage(null);
         } catch (err: any) {
             setErrorMessage(
-                err.response?.data?.message || "Failed to submit offer. Please try again."
+                err.response?.data?.message ||
+                "Failed to submit offer. Please try again."
             );
         }
     };
@@ -94,7 +104,7 @@ export default function Marketplace() {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full p-3 rounded-full bg-gray-800 text-white placeholder-gray-400 
-        focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-lg transition"
+              focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-lg transition"
                     />
                 </div>
             </div>
@@ -107,7 +117,20 @@ export default function Marketplace() {
 
             {/* Item Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-                {filteredItems.length === 0 ? (
+                {isLoading ? (
+                    Array.from({ length: 6 }).map((_, i) => (
+                        <div
+                            key={i}
+                            className="bg-gray-800/80 backdrop-blur-md rounded-xl shadow-lg border border-gray-700 p-5 animate-pulse"
+                        >
+                            <div className="w-full h-56 bg-gray-700 rounded-md mb-4"></div>
+                            <div className="h-6 bg-gray-700 rounded w-3/4 mb-2"></div>
+                            <div className="h-4 bg-gray-700 rounded w-1/2 mb-2"></div>
+                            <div className="h-4 bg-gray-700 rounded w-1/3 mb-4"></div>
+                            <div className="h-10 bg-gray-700 rounded"></div>
+                        </div>
+                    ))
+                ) : filteredItems.length === 0 ? (
                     <p className="text-center text-gray-400 col-span-full">
                         No items match your search.
                     </p>
@@ -118,11 +141,12 @@ export default function Marketplace() {
                             <div
                                 key={item.id}
                                 className="bg-gray-800/80 backdrop-blur-md rounded-xl shadow-lg hover:shadow-purple-500/40 
-          transition transform hover:-translate-y-2 overflow-hidden flex flex-col border border-gray-700"
+                  transition transform hover:-translate-y-2 overflow-hidden flex flex-col border border-gray-700"
                             >
                                 <img
                                     src={`https://express-backend-r2by.onrender.com/api/auth/items/${item.id}/image`}
                                     alt={item.name}
+                                    loading="lazy"
                                     className="w-full h-56 object-cover hover:scale-105 transition-transform duration-300"
                                     onError={(e) => {
                                         (e.target as HTMLImageElement).src = imagePlaceholder;
@@ -150,7 +174,9 @@ export default function Marketplace() {
                                     </div>
 
                                     <span
-                                        className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-4 shadow-md ${item.status ? "bg-red-600 text-white" : "bg-green-600 text-white"
+                                        className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-4 shadow-md ${item.status
+                                                ? "bg-red-600 text-white"
+                                                : "bg-green-600 text-white"
                                             }`}
                                     >
                                         {item.status ? "Sold" : "Taking Offers"}
@@ -170,12 +196,14 @@ export default function Marketplace() {
                                                         })
                                                     }
                                                     className="p-2 w-full text-white/80 rounded-lg border border-gray-600 bg-gray-900 
-                    focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+                            focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
                                                 />
                                                 <button
-                                                    onClick={() => makeOffer(item.id, offerInput[item.id])}
+                                                    onClick={() =>
+                                                        makeOffer(item.id, offerInput[item.id])
+                                                    }
                                                     className="px-4 w-full py-2 bg-linear-to-r from-purple-600 to-indigo-600 
-                    rounded-lg hover:scale-105 transition font-medium shadow-lg"
+                            rounded-lg hover:scale-105 transition font-medium shadow-lg"
                                                 >
                                                     Submit Offer
                                                 </button>
@@ -186,10 +214,13 @@ export default function Marketplace() {
                                                     <button
                                                         key={multiplier}
                                                         onClick={() =>
-                                                            makeOffer(item.id, Math.round(basePrice * multiplier))
+                                                            makeOffer(
+                                                                item.id,
+                                                                Math.round(basePrice * multiplier)
+                                                            )
                                                         }
                                                         className="px-3 py-1 bg-gray-700 rounded-full hover:bg-purple-600 
-                      transition text-sm shadow"
+                              transition text-sm shadow"
                                                     >
                                                         ×{multiplier}
                                                     </button>
@@ -203,7 +234,6 @@ export default function Marketplace() {
                     })
                 )}
             </div>
-
         </div>
     );
 }
