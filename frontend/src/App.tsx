@@ -69,7 +69,7 @@ function App() {
       {/* Main content */}
       <div className="flex-1">
         <Routes>
-          <Route path="/" element={user ? <Navigate to="/" /> : <Home user={user} />} />
+          <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Home user={user} />} />
           <Route
             path="/login"
             element={user ? <Navigate to="/dashboard" /> : <Login setUser={setUser} />}
@@ -91,6 +91,7 @@ function App() {
             path="/my-offers"
             element={user ? <MyOffers /> : <Navigate to="/" />}
           />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
 
       </div>
