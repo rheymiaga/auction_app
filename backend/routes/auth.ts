@@ -122,7 +122,6 @@ router.post(
          RETURNING *`,
                 [name, description, price, ownerId, fileBuffer, fileMime]
             );
-
             return res.json(newItem.rows[0]);
         } catch (err: any) {
             console.error("Error posting item:", err.stack);
@@ -148,9 +147,6 @@ router.get("/items/:id/image", async (req, res) => {
     res.set("Content-Type", result.rows[0].img_mime || "application/octet-stream");
     res.send(result.rows[0].img_data);
 });
-
-
-
 
 // Get all items (marketplace)
 router.get("/items", async (req: Request, res: Response) => {
@@ -190,44 +186,6 @@ router.post("/items/:id/offers", protect, async (req: Request, res: Response) =>
         res.status(500).json({ message: "Failed to submit offer", error: err.message });
     }
 });
-
-// Respond to an offer (accept or decline)
-router.put("/offers/:id/respond", protect, async (req: Request, res: Response) => {
-    try {
-        const { action } = req.body;
-        const offerId = req.params.id;
-
-        const offerResult = await pool.query("SELECT * FROM offers WHERE id = $1", [offerId]);
-        if (!offerResult.rows.length) {
-            return res.status(404).json({ message: "Offer not found" });
-        }
-        const offer = offerResult.rows[0];
-
-        if (action === "accept") {
-            await pool.query("UPDATE offers SET status = 'accepted' WHERE id = $1", [offerId]);
-
-            await pool.query(
-                "UPDATE items SET status = true, current_price = $1 WHERE id = $2",
-                [offer.offer_price, offer.item_id]
-            );
-            await pool.query(
-                "UPDATE offers SET status = 'declined' WHERE item_id = $1 AND id != $2",
-                [offer.item_id, offerId]
-            );
-
-            return res.json({ message: "Offer accepted", acceptedPrice: offer.offer_price });
-        } else if (action === "decline") {
-            await pool.query("UPDATE offers SET status = 'declined' WHERE id = $1", [offerId]);
-            return res.json({ message: "Offer declined" });
-        } else {
-            return res.status(400).json({ message: "Invalid action" });
-        }
-    } catch (err: any) {
-        console.error("Error responding to offer:", err.message);
-        res.status(500).json({ message: "Failed to respond to offer", error: err.message });
-    }
-});
-
 
 // View offers for an item
 router.get("/items/:id/offers", protect, async (req: Request, res: Response) => {
@@ -323,47 +281,105 @@ router.put("/offers/:id/respond", protect, async (req: Request, res: Response) =
 // Get all offers made by the logged-in user
 router.get("/my-offers", protect, async (req: Request, res: Response) => {
     try {
+        const userId = (req as any).user.id;
+
         const offers = await pool.query(
-            `SELECT o.*, i.name AS item_name, u.name AS seller_name
+            `SELECT 
+          o.id,
+          o.item_id,
+          o.buyer_id,
+          o.offer_price,
+          o.status,
+          o.created_at,
+          i.name AS item_name,
+          u.name AS seller_name
        FROM offers o
        JOIN items i ON o.item_id = i.id
        JOIN users u ON i.owner_id = u.id
        WHERE o.buyer_id = $1
        ORDER BY o.created_at DESC`,
-            [(req as any).user.id]
+            [userId]
         );
+
         res.json(offers.rows);
     } catch (err: any) {
         console.error("Error fetching my offers:", err.message);
-        res.status(500).json({ message: "Failed to fetch offers", error: err.message });
+        res.status(500).json({
+            message: "Failed to fetch offers",
+            error: err.message,
+        });
+    }
+});
+
+// Delete an offer made by the logged-in user
+router.delete("/my-offers/:id", protect, async (req: Request, res: Response) => {
+    try {
+        const userId = (req as any).user.id;
+        const offerId = parseInt(req.params.id, 10);
+
+        if (isNaN(offerId)) {
+            return res.status(400).json({ message: "Invalid offer ID" });
+        }
+
+        // Check if the offer exists and belongs to the logged-in user
+        const offerResult = await pool.query(
+            "SELECT * FROM offers WHERE id = $1 AND buyer_id = $2",
+            [offerId, userId]
+        );
+
+        if (offerResult.rows.length === 0) {
+            return res.status(404).json({ message: "Offer not found or not authorized" });
+        }
+
+        const offer = offerResult.rows[0];
+
+        // Delete the offer
+        await pool.query("DELETE FROM offers WHERE id = $1", [offerId]);
+
+        res.json({ message: "Offer deleted successfully", deletedOffer: offer });
+    } catch (err: any) {
+        console.error("Error deleting offer:", err.message);
+        res.status(500).json({ message: "Failed to delete offer", error: err.message });
     }
 });
 
 // ======================= DASHBOARD =======================
-
-// Dashboard: items + offers + profit
+// Dashboard: items + monthly profit
 router.get("/dashboard", protect, async (req: Request, res: Response) => {
     try {
+        const userId = (req as any).user.id;
+
         const items = await pool.query(
-            `SELECT i.*, 
-              (SELECT COUNT(*) FROM offers o WHERE o.item_id = i.id) AS offer_count
+            `SELECT i.id, i.name, i.description, i.starting_price, i.current_price, i.status, 
+              i.img_url, i.owner_id AS "ownerId",
+              (SELECT COUNT(*) 
+               FROM offers o 
+               WHERE o.item_id = i.id AND o.status = 'pending') AS active_offer_count
        FROM items i
        WHERE i.owner_id = $1`,
-            [(req as any).user.id]
+            [userId]
         );
 
         const profit = await pool.query(
-            `SELECT COALESCE(SUM(current_price),0) AS total_profit
+            `SELECT COALESCE(SUM(current_price - starting_price), 0) AS profit
        FROM items
-       WHERE owner_id = $1 AND status = TRUE
-         AND DATE(updated_at) = CURRENT_DATE`,
-            [(req as any).user.id]
+       WHERE owner_id = $1 
+         AND status = TRUE
+         AND DATE_TRUNC('month', updated_at) = DATE_TRUNC('month', CURRENT_DATE)`,
+            [userId]
         );
 
-        res.json({ items: items.rows, profit: profit.rows[0].total_profit });
+        res.json({
+            userId,
+            items: items.rows,
+            profit: Number(profit.rows[0].profit),
+        });
     } catch (err: any) {
         console.error("Error fetching dashboard:", err.message);
-        res.status(500).json({ message: "Failed to fetch dashboard", error: err.message });
+        res.status(500).json({
+            message: "Failed to fetch dashboard",
+            error: err.message,
+        });
     }
 });
 
