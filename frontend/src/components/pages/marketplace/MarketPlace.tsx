@@ -22,6 +22,7 @@ export default function Marketplace() {
     const [searchQuery, setSearchQuery] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [buttonLoading, setButtonLoading] = useState<{ [key: number]: boolean }>({});
+    const [userOffers, setUserOffers] = useState<{ [key: number]: number }>({});
 
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -75,9 +76,11 @@ export default function Marketplace() {
             const res = await api.post(`/api/auth/items/${itemId}/offers`, {
                 offer_price: offerPrice,
             });
-            console.log(res.data);
-            alert(`Offer submitted: ₱${res.data.price}`);
-            alert(`Offer submitted: ₱${res.data.offer_price}`);
+
+            // Save the user's current offer
+            setUserOffers((prev) => ({ ...prev, [itemId]: res.data.offer_price ?? offerPrice }));
+
+            alert(`Offer submitted: ₱${res.data.offer_price ?? offerPrice}`);
             setOfferInput((prev) => ({ ...prev, [itemId]: 0 }));
             setErrorMessage(null);
         } catch (err: any) {
@@ -150,8 +153,19 @@ export default function Marketplace() {
                                     <p className="text-xs text-gray-400 mb-2">Owner: {item.owner_name}</p>
 
                                     <div className="flex justify-between items-center mb-3">
-                                        <span className="text-sm text-gray-400">Starting: ₱{item.starting_price}</span>
-                                        <span className="text-xl font-bold text-green-400">₱{basePrice}</span>
+                                        {userOffers[item.id] ? (
+                                            <>
+                                                <span className="text-sm text-gray-400">Your Offer:</span>
+                                                <span className="text-xl font-bold text-green-400">
+                                                    ₱{userOffers[item.id]}
+                                                </span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span className="text-sm text-gray-400">Starting: ₱{item.starting_price}</span>
+                                                <span className="text-xl font-bold text-green-400">₱{basePrice}</span>
+                                            </>
+                                        )}
                                     </div>
 
                                     <span
@@ -180,8 +194,8 @@ export default function Marketplace() {
                                                     onClick={() => makeOffer(item.id, offerInput[item.id])}
                                                     disabled={buttonLoading[item.id]}
                                                     className={`px-4 w-full py-2 rounded-lg font-medium transition-all duration-300 ease-in-out ${buttonLoading[item.id]
-                                                        ? "bg-gray-600 cursor-not-allowed text-white"
-                                                        : "bg-linear-to-r from-purple-600 to-indigo-600 text-white shadow-lg hover:shadow-purple-500/40 hover:scale-105"
+                                                            ? "bg-gray-600 cursor-not-allowed text-white"
+                                                            : "bg-linear-to-r from-purple-600 to-indigo-600 text-white shadow-lg hover:shadow-purple-500/40 hover:scale-105"
                                                         }`}
                                                 >
                                                     {buttonLoading[item.id] ? "Processing..." : "Submit Offer"}
@@ -192,11 +206,13 @@ export default function Marketplace() {
                                                 {[1.1, 1.25, 1.5, 1.75, 2].map((multiplier) => (
                                                     <button
                                                         key={multiplier}
-                                                        onClick={() => makeOffer(item.id, Math.round(basePrice * multiplier))}
+                                                        onClick={() =>
+                                                            makeOffer(item.id, Math.round(basePrice * multiplier))
+                                                        }
                                                         disabled={buttonLoading[item.id]}
                                                         className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 ease-in-out ${buttonLoading[item.id]
-                                                            ? "bg-gray-600 cursor-not-allowed text-white"
-                                                            : "bg-gray-800/70 text-white shadow hover:bg-linear-to-r hover:from-purple-600 hover:to-indigo-600 hover:shadow-purple-500/40"
+                                                                ? "bg-gray-600 cursor-not-allowed text-white"
+                                                                : "bg-gray-800/70 text-white shadow hover:bg-linear-to-r hover:from-purple-600 hover:to-indigo-600 hover:shadow-purple-500/40"
                                                             }`}
                                                     >
                                                         {buttonLoading[item.id] ? "..." : `×${multiplier}`}
