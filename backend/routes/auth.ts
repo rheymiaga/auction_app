@@ -133,36 +133,55 @@ router.post(
     }
 );
 
+// Get item image (optimized)
 router.get("/items/:id/image", async (req, res) => {
-    const { id } = req.params;
-    const result = await pool.query(
-        "SELECT img_data, img_mime FROM items WHERE id = $1",
-        [id]
-    );
+    try {
+        const { id } = req.params;
+        const result = await pool.query(
+            "SELECT img_data, img_mime FROM items WHERE id = $1",
+            [id]
+        );
 
-    if (!result.rows.length || !result.rows[0].img_data) {
-        return res.status(404).send("Image not found");
+        if (!result.rows.length || !result.rows[0].img_data) {
+            return res.status(404).send("Image not found");
+        }
+
+        // Set proper headers
+        res.set("Content-Type", result.rows[0].img_mime || "application/octet-stream");
+        res.set("Cache-Control", "public, max-age=3600"); // cache for 1 hour
+
+        // Stream the image buffer directly
+        const buffer = result.rows[0].img_data;
+        res.end(buffer);
+    } catch (err: any) {
+        console.error("Error fetching image:", err.message);
+        res.status(500).json({ message: "Failed to fetch image", error: err.message });
     }
-
-    res.set("Content-Type", result.rows[0].img_mime || "application/octet-stream");
-    res.send(result.rows[0].img_data);
 });
 
-// Get all items (marketplace)
 router.get("/items", async (req: Request, res: Response) => {
     try {
+        const { limit = 20, offset = 0 } = req.query;
+
         const items = await pool.query(
             `SELECT i.*, u.name AS owner_name
        FROM items i
        JOIN users u ON i.owner_id = u.id
-       ORDER BY i.created_at DESC`
+       WHERE i.status IS NULL 
+          OR i.updated_at > NOW() - INTERVAL '1 hour'
+       ORDER BY i.created_at DESC
+       LIMIT $1 OFFSET $2`,
+            [Number(limit), Number(offset)]
         );
+
         res.json(items.rows);
     } catch (err: any) {
         console.error("Error fetching items:", err.message);
         res.status(500).json({ message: "Failed to fetch items", error: err.message });
     }
 });
+
+
 
 // ======================= OFFERS =======================
 
@@ -229,20 +248,41 @@ router.post("/items/:id/offers", protect, async (req: Request, res: Response) =>
 // View offers for an item
 router.get("/items/:id/offers", protect, async (req: Request, res: Response) => {
     try {
-        const offers = await pool.query(
-            `SELECT o.*, u.name AS buyer_name
-       FROM offers o
-       JOIN users u ON o.buyer_id = u.id
-       WHERE o.item_id = $1
-       ORDER BY o.created_at DESC`,
-            [req.params.id]
-        );
+        const { id } = req.params;
+        const { recent, limit, offset } = req.query;
+
+        let query = `
+      SELECT o.*, u.name AS buyer_name
+      FROM offers o
+      JOIN users u ON o.buyer_id = u.id
+      WHERE o.item_id = $1
+    `;
+
+        const params: any[] = [id];
+
+        if (recent === "1h") {
+            query += ` AND o.created_at > NOW() - INTERVAL '1 hour'`;
+        }
+
+        query += ` ORDER BY o.created_at DESC`;
+
+        if (limit) {
+            query += ` LIMIT $${params.length + 1}`;
+            params.push(Number(limit));
+        }
+        if (offset) {
+            query += ` OFFSET $${params.length + 1}`;
+            params.push(Number(offset));
+        }
+
+        const offers = await pool.query(query, params);
         res.json(offers.rows);
     } catch (err: any) {
         console.error("Error fetching offers:", err.message);
         res.status(500).json({ message: "Failed to fetch offers", error: err.message });
     }
 });
+
 
 // Delete an item
 router.delete("/items/:id", protect, async (req: Request, res: Response) => {
@@ -388,30 +428,43 @@ router.get("/dashboard", protect, async (req: Request, res: Response) => {
     try {
         const userId = (req as any).user.id;
 
-        const items = await pool.query(
-            `SELECT i.id, i.name, i.description, i.starting_price, i.current_price, i.status, 
-              i.img_url, i.owner_id AS "ownerId",
-              (SELECT COUNT(*) 
-               FROM offers o 
-               WHERE o.item_id = i.id AND o.status = 'pending') AS active_offer_count
-       FROM items i
-       WHERE i.owner_id = $1`,
-            [userId]
-        );
-
-        const profit = await pool.query(
-            `SELECT COALESCE(SUM(current_price - starting_price), 0) AS profit
-       FROM items
-       WHERE owner_id = $1 
-         AND status = TRUE
-         AND DATE_TRUNC('month', updated_at) = DATE_TRUNC('month', CURRENT_DATE)`,
+        const result = await pool.query(
+            `
+      WITH profit_cte AS (
+        SELECT COALESCE(SUM(current_price - starting_price), 0) AS profit
+        FROM items
+        WHERE owner_id = $1
+          AND status = TRUE
+          AND DATE_TRUNC('month', updated_at) = DATE_TRUNC('month', CURRENT_DATE)
+      )
+      SELECT i.id, i.name, i.description, i.starting_price, i.current_price, i.status,
+             i.img_url, i.owner_id AS "ownerId",
+             COUNT(o.id) FILTER (WHERE o.status = 'pending') AS active_offer_count,
+             p.profit
+      FROM items i
+      LEFT JOIN offers o ON o.item_id = i.id
+      CROSS JOIN profit_cte p
+      WHERE i.owner_id = $1
+      GROUP BY i.id, p.profit
+      ORDER BY i.created_at DESC
+      `,
             [userId]
         );
 
         res.json({
             userId,
-            items: items.rows,
-            profit: Number(profit.rows[0].profit),
+            items: result.rows.map(r => ({
+                id: r.id,
+                name: r.name,
+                description: r.description,
+                starting_price: r.starting_price,
+                current_price: r.current_price,
+                status: r.status,
+                img_url: r.img_url,
+                ownerId: r.ownerId,
+                active_offer_count: Number(r.active_offer_count),
+            })),
+            profit: Number(result.rows.length ? result.rows[0].profit : 0),
         });
     } catch (err: any) {
         console.error("Error fetching dashboard:", err.message);
