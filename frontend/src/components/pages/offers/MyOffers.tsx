@@ -49,7 +49,7 @@ export const MyOffers = () => {
         <div className="bg-gray-900/40 backdrop-blur-lg rounded-2xl shadow-md p-6 animate-pulse flex flex-col gap-4 transition-all duration-300">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="w-16 h-16 bg-gray-800/70 rounded-xl"></div>
+
                     <div className="h-6 w-32 bg-gray-800/70 rounded"></div>
                 </div>
                 <div className="h-4 w-20 bg-gray-800/70 rounded-full"></div>
@@ -109,15 +109,7 @@ export const MyOffers = () => {
                                 <div className="bg-gray-900/50 backdrop-blur-lg rounded-2xl shadow-md p-6 flex flex-col gap-4 hover:shadow-lg hover:scale-[1.01] transition-transform duration-300 ease-out">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
-                                            <img
-                                                src={`https://express-backend-r2by.onrender.com/api/auth/items/${offer.id}/image`}
-                                                alt={offer.item_name}
-                                                loading="lazy"
-                                                className="w-16 h-16 object-cover rounded-xl hover:scale-105 transition-transform duration-500"
-                                                onError={(e) => {
-                                                    (e.target as HTMLImageElement).src = imagePlaceholder;
-                                                }}
-                                            />
+
                                             <h3 className="text-lg md:text-xl font-bold text-purple-300">{offer.item_name}</h3>
                                         </div>
                                         <span

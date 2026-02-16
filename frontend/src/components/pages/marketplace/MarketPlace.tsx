@@ -194,8 +194,8 @@ export default function Marketplace() {
                                                     onClick={() => makeOffer(item.id, offerInput[item.id])}
                                                     disabled={buttonLoading[item.id]}
                                                     className={`px-4 w-full py-2 rounded-lg font-medium transition-all duration-300 ease-in-out ${buttonLoading[item.id]
-                                                            ? "bg-gray-600 cursor-not-allowed text-white"
-                                                            : "bg-linear-to-r from-purple-600 to-indigo-600 text-white shadow-lg hover:shadow-purple-500/40 hover:scale-105"
+                                                        ? "bg-gray-600 cursor-not-allowed text-white"
+                                                        : "bg-linear-to-r from-purple-600 to-indigo-600 text-white shadow-lg hover:shadow-purple-500/40 hover:scale-105"
                                                         }`}
                                                 >
                                                     {buttonLoading[item.id] ? "Processing..." : "Submit Offer"}
@@ -211,8 +211,8 @@ export default function Marketplace() {
                                                         }
                                                         disabled={buttonLoading[item.id]}
                                                         className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 ease-in-out ${buttonLoading[item.id]
-                                                                ? "bg-gray-600 cursor-not-allowed text-white"
-                                                                : "bg-gray-800/70 text-white shadow hover:bg-linear-to-r hover:from-purple-600 hover:to-indigo-600 hover:shadow-purple-500/40"
+                                                            ? "bg-gray-600 cursor-not-allowed text-white"
+                                                            : "bg-gray-800/70 text-white shadow hover:bg-linear-to-r hover:from-purple-600 hover:to-indigo-600 hover:shadow-purple-500/40"
                                                             }`}
                                                     >
                                                         {buttonLoading[item.id] ? "..." : `×${multiplier}`}
