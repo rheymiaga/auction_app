@@ -46,7 +46,7 @@ export const MyOffers = () => {
     };
 
     const SkeletonCard = () => (
-        <div className="bg-gray-900/40 backdrop-blur-lg rounded-2xl shadow-[6px_6px_12px_rgba(0,0,0,0.6),-6px_-6px_12px_rgba(255,255,255,0.05)] p-6 animate-pulse flex flex-col gap-4">
+        <div className="bg-gray-900/40 backdrop-blur-lg rounded-2xl shadow-md p-6 animate-pulse flex flex-col gap-4 transition-all duration-300">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className="w-16 h-16 bg-gray-800/70 rounded-xl"></div>
@@ -68,13 +68,13 @@ export const MyOffers = () => {
             </h1>
 
             {errorMessage && (
-                <div className="mb-6 p-4 bg-red-700/40 border border-red-600 rounded-xl text-red-200 shadow-[inset_2px_2px_6px_rgba(255,255,255,0.05),inset_-2px_-2px_6px_rgba(0,0,0,0.4)]">
+                <div className="mb-6 p-4 bg-red-700/40 border border-red-600 rounded-xl text-red-200 shadow-inner">
                     {errorMessage}
                 </div>
             )}
 
             {successMessage && (
-                <div className="mb-6 p-4 bg-green-700/40 border border-green-600 rounded-xl text-green-200 shadow-[inset_2px_2px_6px_rgba(255,255,255,0.05),inset_-2px_-2px_6px_rgba(0,0,0,0.4)]">
+                <div className="mb-6 p-4 bg-green-700/40 border border-green-600 rounded-xl text-green-200 shadow-inner">
                     {successMessage}
                 </div>
             )}
@@ -87,7 +87,7 @@ export const MyOffers = () => {
                 </div>
             ) : offers.length === 0 ? (
                 <div className="flex flex-col items-center justify-center text-center mt-20">
-                    <div className="w-24 h-24 rounded-full bg-gray-800/70 backdrop-blur-md flex items-center justify-center mb-6 shadow-[6px_6px_12px_rgba(0,0,0,0.6),-6px_-6px_12px_rgba(255,255,255,0.05)]">
+                    <div className="w-24 h-24 rounded-full bg-gray-800/70 backdrop-blur-md flex items-center justify-center mb-6 shadow-md">
                         <span className="text-4xl">📝</span>
                     </div>
                     <p className="text-gray-300 italic text-lg">You haven’t made any offers yet.</p>
@@ -104,9 +104,9 @@ export const MyOffers = () => {
                                 className={`relative md:w-[90%] ${index % 2 === 0 ? "md:justify-self-end" : "md:justify-self-start"
                                     }`}
                             >
-                                <span className="absolute -left-3 md:left-auto md:-ml-3 top-6 w-6 h-6 bg-purple-500 rounded-full border-4 border-gray-900 shadow-[0_4px_12px_rgba(128,0,255,0.6)]"></span>
+                                <span className="absolute -left-3 md:left-auto md:-ml-3 top-6 w-6 h-6 bg-purple-500 rounded-full border-4 border-gray-900 shadow-lg"></span>
 
-                                <div className="bg-gray-900/50 backdrop-blur-lg rounded-2xl shadow-[6px_6px_12px_rgba(0,0,0,0.6),-6px_-6px_12px_rgba(255,255,255,0.05)] p-6 flex flex-col gap-4 hover:shadow-[inset_2px_2px_6px_rgba(255,255,255,0.05),inset_-2px_-2px_6px_rgba(0,0,0,0.4)] transition transform hover:-translate-y-1">
+                                <div className="bg-gray-900/50 backdrop-blur-lg rounded-2xl shadow-md p-6 flex flex-col gap-4 hover:shadow-lg hover:scale-[1.01] transition-transform duration-300 ease-out">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <img
@@ -158,7 +158,7 @@ export const MyOffers = () => {
 
                                     <button
                                         onClick={() => deleteOffer(offer.id)}
-                                        className="mt-4 px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-300 ease-in-out bg-linear-to-r from-red-600 to-pink-600 text-white shadow hover:shadow-red-500/40 hover:scale-105 self-start md:self-end"
+                                        className="mt-4 px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-300 ease-in-out bg-linear-to-r from-red-600 to-pink-600 text-white shadow-md hover:shadow-red-500/40 hover:scale-105 self-start md:self-end"
                                     >
                                         Delete Offer
                                     </button>

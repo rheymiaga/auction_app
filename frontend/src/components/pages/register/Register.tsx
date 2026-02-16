@@ -17,10 +17,14 @@ type RegisterProps = {
 export const Register = ({ setUser }: RegisterProps) => {
     const [form, setForm] = useState({ name: "", email: "", password: "" });
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (loading) return;
+        setLoading(true);
+
         try {
             const res = await api.post("/api/auth/register", form, {
                 headers: { "Content-Type": "application/json" },
@@ -33,12 +37,14 @@ export const Register = ({ setUser }: RegisterProps) => {
         } catch (err: any) {
             console.error(err.response?.data);
             setError(err.response?.data?.message || "Registration failed");
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-indigo-900 via-black to-purple-900 relative overflow-hidden">
-
+            {/* Decorative glowing accents */}
             <div className="absolute pointer-events-none w-72 h-72 bg-purple-600/20 rounded-full blur-3xl top-10 left-10 animate-pulse"></div>
             <div className="absolute pointer-events-none w-72 h-72 bg-indigo-600/20 rounded-full blur-3xl bottom-10 right-10 animate-pulse"></div>
 
@@ -90,9 +96,39 @@ export const Register = ({ setUser }: RegisterProps) => {
                     {/* Submit */}
                     <button
                         type="submit"
-                        className="w-full py-3 rounded-lg font-semibold text-white bg-gray-900 shadow-[6px_6px_12px_rgba(0,0,0,0.6),-6px_-6px_12px_rgba(255,255,255,0.05)] hover:shadow-[inset_4px_4px_8px_rgba(0,0,0,0.6),inset_-4px_-4px_8px_rgba(255,255,255,0.05)] transition-all duration-300 ease-in-out"
+                        disabled={loading}
+                        className={`w-full py-3 rounded-lg font-semibold text-white transition-all duration-300 ease-in-out ${loading
+                                ? "bg-gray-700 cursor-not-allowed flex items-center justify-center"
+                                : "bg-gray-900 shadow-[6px_6px_12px_rgba(0,0,0,0.6),-6px_-6px_12px_rgba(255,255,255,0.05)] hover:shadow-[inset_4px_4px_8px_rgba(0,0,0,0.6),inset_-4px_-4px_8px_rgba(255,255,255,0.05)]"
+                            }`}
                     >
-                        Register
+                        {loading ? (
+                            <span className="flex items-center gap-2">
+                                <svg
+                                    className="animate-spin h-5 w-5 text-white"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                    ></circle>
+                                    <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z"
+                                    ></path>
+                                </svg>
+                                Registering...
+                            </span>
+                        ) : (
+                            "Register"
+                        )}
                     </button>
                 </form>
 
