@@ -47,17 +47,23 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-linear-to-tr from-black/70 to-purple-600/30 text-white">
-        {/* Spinner */}
-        <div className="w-20 h-20 rounded-full border-4 border-t-transparent border-purple-400 animate-spin shadow-[6px_6px_12px_rgba(0,0,0,0.6),-6px_-6px_12px_rgba(255,255,255,0.05)]"></div>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-linear-to-tr from-gray-900 via-purple-900 to-black text-white">
+        <div className="relative w-24 h-24">
+          <div className="absolute inset-0 rounded-full border-4 border-purple-400 border-t-transparent animate-spin"></div>
+          <div className="absolute inset-2 rounded-full border-4 border-pink-400 border-b-transparent animate-spin-slow"></div>
+        </div>
 
-        {/* Text */}
-        <p className="mt-6 text-xl font-semibold tracking-wide text-transparent bg-clip-text bg-linear-to-r from-purple-300 to-pink-400 animate-pulse">
+        <p className="mt-8 text-2xl font-bold tracking-wide text-transparent bg-clip-text bg-linear-to-r from-purple-300 via-pink-400 to-yellow-300 animate-pulse">
           Preparing Auction_Xpress...
+        </p>
+
+        <p className="mt-2 text-sm text-gray-300 animate-fadeIn">
+          Please wait while we set things up
         </p>
       </div>
     );
   }
+
 
   const hideNavbar = ["/login", "/register"].includes(location.pathname);
 
