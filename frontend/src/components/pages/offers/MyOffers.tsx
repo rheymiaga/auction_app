@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../../services/api";
-import imagePlaceholder from "../../../assets/imagePlaceholder.jpg";
+
 
 interface MyOffer {
     id: number;
