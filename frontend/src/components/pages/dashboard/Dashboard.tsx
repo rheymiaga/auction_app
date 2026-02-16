@@ -313,7 +313,7 @@ export const Dashboard = () => {
                                         </div>
                                         <p className="text-gray-200 italic text-lg">No offers yet.</p>
                                         <p className="text-gray-400 text-sm mt-2">
-                                            Be the first to make an offer!
+                                            waiting for offers...
                                         </p>
                                     </div>
                                 ) : (

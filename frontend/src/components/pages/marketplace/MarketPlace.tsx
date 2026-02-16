@@ -75,6 +75,8 @@ export default function Marketplace() {
             const res = await api.post(`/api/auth/items/${itemId}/offers`, {
                 offer_price: offerPrice,
             });
+            console.log(res.data);
+            alert(`Offer submitted: ₱${res.data.price}`);
             alert(`Offer submitted: ₱${res.data.offer_price}`);
             setOfferInput((prev) => ({ ...prev, [itemId]: 0 }));
             setErrorMessage(null);
