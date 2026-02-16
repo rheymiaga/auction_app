@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import api from "../../../services/api";
-import imagePlaceholder from '../../../assets/imagePlaceholder.jpg';
+import imagePlaceholder from "../../../assets/imagePlaceholder.jpg";
 import { FaBoxOpen, FaCoins } from "react-icons/fa";
 import { RiAuctionFill } from "react-icons/ri";
 
@@ -34,7 +34,6 @@ interface DashboardResponse {
 
 export const Dashboard = () => {
     const [items, setItems] = useState<Item[]>([]);
-    const [soldItems, setSoldItems] = useState<number>(0);
     const [offers, setOffers] = useState<Offer[]>([]);
     const [selectedItem, setSelectedItem] = useState<number | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -43,6 +42,12 @@ export const Dashboard = () => {
     const [isLoadingOffers, setIsLoadingOffers] = useState(false);
     const [profit, setProfit] = useState<number>(0);
 
+    // Derived sold items count
+    const soldItems = useMemo(
+        () => items.filter((i) => i.status === true).length,
+        [items]
+    );
+
     const fetchDashboard = async () => {
         try {
             setIsLoadingDashboard(true);
@@ -50,9 +55,6 @@ export const Dashboard = () => {
 
             setItems(res.data.items);
             setProfit(res.data.profit);
-            const soldCount = res.data.items.filter((i: Item) => i.status === true).length;
-            setSoldItems(soldCount);
-
             setErrorMessage(null);
         } catch (err: any) {
             console.error("Error fetching dashboard:", err.response?.data || err.message);
@@ -71,6 +73,7 @@ export const Dashboard = () => {
             setIsLoadingOffers(true);
             const res = await api.get<Offer[]>(`/api/auth/items/${itemId}/offers`);
 
+            // Keep only highest offer per buyer
             const highestOffersMap = res.data.reduce((acc: Record<string, Offer>, offer) => {
                 const key = offer.buyer_name;
                 if (!acc[key] || offer.offer_price > acc[key].offer_price) {
@@ -79,9 +82,7 @@ export const Dashboard = () => {
                 return acc;
             }, {});
 
-            const highestOffers = Object.values(highestOffersMap);
-
-            setOffers(highestOffers);
+            setOffers(Object.values(highestOffersMap));
             setSelectedItem(itemId);
             setErrorMessage(null);
         } catch (err: any) {
@@ -98,14 +99,14 @@ export const Dashboard = () => {
             alert(res.data.message);
 
             if (action === "accept") {
+                // Optimistically clear offers for accepted item
                 setOffers([]);
                 setSelectedItem(null);
                 await fetchDashboard();
-            } else if (action === "decline") {
-                if (selectedItem) {
-                    const refreshed = await api.get<Offer[]>(`/api/auth/items/${selectedItem}/offers`);
-                    setOffers(refreshed.data);
-                }
+            } else if (action === "decline" && selectedItem) {
+                // Refresh offers for declined item
+                const refreshed = await api.get<Offer[]>(`/api/auth/items/${selectedItem}/offers`);
+                setOffers(refreshed.data);
                 await fetchDashboard();
             }
         } catch (err: any) {
@@ -124,6 +125,7 @@ export const Dashboard = () => {
             setErrorMessage("Failed to delete item.");
         }
     };
+
 
     return (
         <div className="px-6 py-10 mt-10 lg:mt-0 text-white min-h-screen transition-all duration-300 transform bg-linear-to-br from-gray-900 via-black to-gray-800">

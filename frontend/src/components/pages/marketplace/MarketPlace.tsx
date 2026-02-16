@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { useDebounce } from "use-debounce";
 import api from "../../../services/api";
 import imagePlaceholder from "../../../assets/imagePlaceholder.jpg";
 
@@ -16,47 +17,21 @@ interface Item {
 
 export default function Marketplace() {
     const [items, setItems] = useState<Item[]>([]);
-    const [filteredItems, setFilteredItems] = useState<Item[]>([]);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [debouncedQuery] = useDebounce(searchQuery, 300);
     const [offerInput, setOfferInput] = useState<{ [key: number]: number }>({});
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [searchQuery, setSearchQuery] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [buttonLoading, setButtonLoading] = useState<{ [key: number]: boolean }>({});
     const [userOffers, setUserOffers] = useState<{ [key: number]: number }>({});
 
-    useEffect(() => {
-        const handler = setTimeout(() => {
-            if (!searchQuery.trim()) {
-                setFilteredItems(items);
-            } else {
-                const q = searchQuery.toLowerCase();
-                setFilteredItems(
-                    items.filter(
-                        (item) =>
-                            item.name.toLowerCase().includes(q) ||
-                            item.description.toLowerCase().includes(q) ||
-                            item.owner_name.toLowerCase().includes(q)
-                    )
-                );
-            }
-        }, 300);
-        return () => clearTimeout(handler);
-    }, [searchQuery, items]);
-
+    // Fetch items once on mount
     useEffect(() => {
         const fetchItems = async () => {
             try {
                 setIsLoading(true);
                 const res = await api.get("/api/auth/items");
-                const now = new Date();
-                const filtered = res.data.filter((item: Item) => {
-                    if (!item.status) return true;
-                    const updated = new Date(item.updated_at);
-                    const diffMs = now.getTime() - updated.getTime();
-                    return diffMs < 60 * 60 * 1000;
-                });
-                setItems(filtered);
-                setFilteredItems(filtered);
+                setItems(res.data); // backend already filters recent items
             } catch {
                 setErrorMessage("Failed to load marketplace items.");
             } finally {
@@ -66,6 +41,19 @@ export default function Marketplace() {
         fetchItems();
     }, []);
 
+    // Derived filtered items
+    const filteredItems = useMemo(() => {
+        if (!debouncedQuery.trim()) return items;
+        const q = debouncedQuery.toLowerCase();
+        return items.filter(
+            (item) =>
+                item.name.toLowerCase().includes(q) ||
+                item.description.toLowerCase().includes(q) ||
+                item.owner_name.toLowerCase().includes(q)
+        );
+    }, [debouncedQuery, items]);
+
+    // Offer submission
     const makeOffer = async (itemId: number, offerPrice: number) => {
         if (!offerPrice || offerPrice <= 0) {
             setErrorMessage("Please enter a valid offer price.");
@@ -77,8 +65,10 @@ export default function Marketplace() {
                 offer_price: offerPrice,
             });
 
-            // Save the user's current offer
-            setUserOffers((prev) => ({ ...prev, [itemId]: res.data.offer_price ?? offerPrice }));
+            setUserOffers((prev) => ({
+                ...prev,
+                [itemId]: res.data.offer_price ?? offerPrice,
+            }));
 
             alert(`Offer submitted: ₱${res.data.offer_price ?? offerPrice}`);
             setOfferInput((prev) => ({ ...prev, [itemId]: 0 }));
@@ -91,6 +81,7 @@ export default function Marketplace() {
             setButtonLoading((prev) => ({ ...prev, [itemId]: false }));
         }
     };
+
 
     return (
         <div className="flex-1 py-8 px-3 mt-10 lg:mt-0 transition-all duration-300 transform text-white bg-linear-to-br from-gray-900 via-black to-gray-800 min-h-screen">

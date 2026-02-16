@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../../services/api";
 
-
 interface MyOffer {
     id: number;
     item_name: string;
@@ -18,12 +17,14 @@ export const MyOffers = () => {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+    // Fetch offers once on mount
     useEffect(() => {
         const fetchOffers = async () => {
             try {
                 setIsLoading(true);
                 const res = await api.get("/api/auth/my-offers");
                 setOffers(res.data);
+                setErrorMessage(null);
             } catch {
                 setErrorMessage("Failed to fetch offers.");
             } finally {
@@ -33,17 +34,26 @@ export const MyOffers = () => {
         fetchOffers();
     }, []);
 
+    // Delete offer
     const deleteOffer = async (id: number) => {
+        // Optimistic UI update
+        setOffers((prev) => prev.filter((offer) => offer.id !== id));
         try {
             await api.delete(`/api/auth/my-offers/${id}`);
-            setOffers((prev) => prev.filter((offer) => offer.id !== id));
             setSuccessMessage("Offer deleted successfully.");
             setErrorMessage(null);
         } catch {
+            // Rollback if delete fails
             setErrorMessage("Failed to delete offer.");
             setSuccessMessage(null);
+            // Optionally re-fetch offers to restore state
+            const res = await api.get("/api/auth/my-offers");
+            setOffers(res.data);
         }
     };
+
+    if (isLoading) return <p>Loading offers...</p>;
+    if (errorMessage) return <p className="error">{errorMessage}</p>;
 
     const SkeletonCard = () => (
         <div className="bg-gray-900/40 backdrop-blur-lg rounded-2xl shadow-md p-6 animate-pulse flex flex-col gap-4 transition-all duration-300">
