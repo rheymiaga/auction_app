@@ -46,14 +46,11 @@ export const MyOffers = () => {
             // Rollback if delete fails
             setErrorMessage("Failed to delete offer.");
             setSuccessMessage(null);
-            // Optionally re-fetch offers to restore state
+            
             const res = await api.get("/api/auth/my-offers");
             setOffers(res.data);
         }
     };
-
-    if (isLoading) return <p>Loading offers...</p>;
-    if (errorMessage) return <p className="error">{errorMessage}</p>;
 
     const SkeletonCard = () => (
         <div className="bg-gray-900/40 backdrop-blur-lg rounded-2xl shadow-md p-6 animate-pulse flex flex-col gap-4 transition-all duration-300">
