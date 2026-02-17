@@ -11,7 +11,7 @@ interface Item {
     current_price: number | null;
     img_url: string | null;
     owner_name: string;
-    status: boolean;
+    status: boolean | null;
     updated_at: string;
 }
 
@@ -25,20 +25,26 @@ export default function Marketplace() {
     const [buttonLoading, setButtonLoading] = useState<{ [key: number]: boolean }>({});
     const [userOffers, setUserOffers] = useState<{ [key: number]: number }>({});
 
-    // Fetch items once on mount
+    const fetchItems = async () => {
+        try {
+            setIsLoading(true);
+            const res = await api.get("/api/auth/items", {
+                params: { limit: 20, offset: 0 },
+            });
+            setItems(res.data);
+            setErrorMessage(null);
+        } catch (err: any) {
+            setErrorMessage("Failed to load marketplace items.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchItems = async () => {
-            try {
-                setIsLoading(true);
-                const res = await api.get("/api/auth/items");
-                setItems(res.data);
-            } catch {
-                setErrorMessage("Failed to load marketplace items.");
-            } finally {
-                setIsLoading(false);
-            }
-        };
         fetchItems();
+        // Optional: auto-refresh every 30s so items stay up-to-date
+        const interval = setInterval(fetchItems, 30000);
+        return () => clearInterval(interval);
     }, []);
 
     // Derived filtered items
@@ -73,6 +79,8 @@ export default function Marketplace() {
             alert(`Offer submitted: ₱${res.data.offer_price ?? offerPrice}`);
             setOfferInput((prev) => ({ ...prev, [itemId]: 0 }));
             setErrorMessage(null);
+
+            fetchItems();
         } catch (err: any) {
             setErrorMessage(
                 err.response?.data?.message || "Failed to submit offer. Please try again."
@@ -81,7 +89,6 @@ export default function Marketplace() {
             setButtonLoading((prev) => ({ ...prev, [itemId]: false }));
         }
     };
-
 
     return (
         <div className="flex-1 py-8 px-3 mt-10 lg:mt-0 transition-all duration-300 transform text-white bg-linear-to-br from-gray-900 via-black to-gray-800 min-h-screen">
