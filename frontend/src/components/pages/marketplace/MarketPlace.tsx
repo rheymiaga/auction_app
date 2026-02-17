@@ -29,7 +29,7 @@ export default function Marketplace() {
         try {
             setIsLoading(true);
 
-            const res = await api.get("/items", {
+            const res = await api.get("/api/auth/items", {
                 params: { limit: 20, offset: 0 },
             });
 
@@ -50,9 +50,7 @@ export default function Marketplace() {
 
     useEffect(() => {
         fetchItems();
-        // Optional: auto-refresh every 30s so items stay up-to-date
-        const interval = setInterval(fetchItems, 30000);
-        return () => clearInterval(interval);
+
     }, []);
 
     // Derived filtered items
