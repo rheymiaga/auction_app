@@ -28,12 +28,20 @@ export default function Marketplace() {
     const fetchItems = async () => {
         try {
             setIsLoading(true);
-            const res = await api.get("/api/auth/items", {
+
+            const res = await api.get("/items", {
                 params: { limit: 20, offset: 0 },
             });
-            setItems(res.data);
-            setErrorMessage(null);
+
+            if (Array.isArray(res.data)) {
+                setItems(res.data);
+                setErrorMessage(null);
+            } else {
+                setItems([]);
+                setErrorMessage("Unexpected response format from server.");
+            }
         } catch (err: any) {
+            console.error("Error fetching items:", err.message);
             setErrorMessage("Failed to load marketplace items.");
         } finally {
             setIsLoading(false);
