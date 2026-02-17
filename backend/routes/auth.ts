@@ -161,17 +161,17 @@ router.get("/items/:id/image", async (req, res) => {
 
 router.get("/items", async (req: Request, res: Response) => {
     try {
-        const { limit = 20, offset = 0 } = req.query;
+        const limit = Number(req.query.limit) || 20;
+        const offset = Number(req.query.offset) || 0;
 
         const items = await pool.query(
             `SELECT i.*, u.name AS owner_name
        FROM items i
        JOIN users u ON i.owner_id = u.id
-       WHERE i.status IS NULL 
-          OR i.updated_at > NOW() - INTERVAL '1 hour'
+       WHERE i.status IS NULL OR i.status = 'active'
        ORDER BY i.created_at DESC
        LIMIT $1 OFFSET $2`,
-            [Number(limit), Number(offset)]
+            [limit, offset]
         );
 
         res.json(items.rows);
@@ -180,7 +180,6 @@ router.get("/items", async (req: Request, res: Response) => {
         res.status(500).json({ message: "Failed to fetch items", error: err.message });
     }
 });
-
 
 
 // ======================= OFFERS =======================

@@ -31,7 +31,7 @@ export default function Marketplace() {
             try {
                 setIsLoading(true);
                 const res = await api.get("/api/auth/items");
-                setItems(res.data); // backend already filters recent items
+                setItems(res.data);
             } catch {
                 setErrorMessage("Failed to load marketplace items.");
             } finally {
