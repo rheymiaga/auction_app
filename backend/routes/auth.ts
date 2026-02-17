@@ -134,28 +134,35 @@ router.post(
 );
 
 // Get item image (optimized)
-router.get("/items/:id/image", async (req, res) => {
+router.get("/items/:id/image", async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
+        const id = Number(req.params.id);
+        if (isNaN(id)) {
+            return res.status(400).json({ message: "Invalid item ID" });
+        }
+
         const result = await pool.query(
             "SELECT img_data, img_mime FROM items WHERE id = $1",
             [id]
         );
 
         if (!result.rows.length || !result.rows[0].img_data) {
-            return res.status(404).send("Image not found");
+            return res.status(404).json({ message: "Image not found" });
         }
 
-        // Set proper headers
-        res.set("Content-Type", result.rows[0].img_mime || "application/octet-stream");
-        res.set("Cache-Control", "public, max-age=3600"); // cache for 1 hour
+        const { img_data, img_mime } = result.rows[0];
 
-        // Stream the image buffer directly
-        const buffer = result.rows[0].img_data;
-        res.end(buffer);
+        // Set proper headers
+        res.set("Content-Type", img_mime || "application/octet-stream");
+        res.set("Cache-Control", "public, max-age=3600");
+
+        res.send(img_data);
     } catch (err: any) {
         console.error("Error fetching image:", err.message);
-        res.status(500).json({ message: "Failed to fetch image", error: err.message });
+        res.status(500).json({
+            message: "Failed to fetch image",
+            error: err.message,
+        });
     }
 });
 
@@ -168,7 +175,6 @@ router.get("/items", async (req: Request, res: Response) => {
             `SELECT i.*, u.name AS owner_name
        FROM items i
        JOIN users u ON i.owner_id = u.id
-       WHERE i.status IS NULL
        ORDER BY i.created_at DESC
        LIMIT $1 OFFSET $2`,
             [limit, offset]
@@ -180,7 +186,6 @@ router.get("/items", async (req: Request, res: Response) => {
         res.status(500).json({ message: "Failed to fetch items", error: err.message });
     }
 });
-
 
 // ======================= OFFERS =======================
 
