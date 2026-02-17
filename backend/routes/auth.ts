@@ -168,7 +168,7 @@ router.get("/items", async (req: Request, res: Response) => {
             `SELECT i.*, u.name AS owner_name
        FROM items i
        JOIN users u ON i.owner_id = u.id
-       WHERE i.status IS NULL OR i.status = 'active'
+       WHERE i.status IS TRUE OR i.status IS NULL
        ORDER BY i.created_at DESC
        LIMIT $1 OFFSET $2`,
             [limit, offset]
@@ -180,7 +180,6 @@ router.get("/items", async (req: Request, res: Response) => {
         res.status(500).json({ message: "Failed to fetch items", error: err.message });
     }
 });
-
 
 // ======================= OFFERS =======================
 
