@@ -41,8 +41,6 @@ export const Dashboard = () => {
     const [isLoadingDashboard, setIsLoadingDashboard] = useState(true);
     const [isLoadingOffers, setIsLoadingOffers] = useState(false);
     const [profit, setProfit] = useState<number>(0);
-
-    // Derived sold items count
     const soldItems = useMemo(
         () => items.filter((i) => i.status === true).length,
         [items]
@@ -72,8 +70,6 @@ export const Dashboard = () => {
         try {
             setIsLoadingOffers(true);
             const res = await api.get<Offer[]>(`/api/auth/items/${itemId}/offers`);
-
-            // Keep only highest offer per buyer
             const highestOffersMap = res.data.reduce((acc: Record<string, Offer>, offer) => {
                 const key = offer.buyer_name;
                 if (!acc[key] || offer.offer_price > acc[key].offer_price) {
@@ -99,12 +95,10 @@ export const Dashboard = () => {
             alert(res.data.message);
 
             if (action === "accept") {
-                // Optimistically clear offers for accepted item
                 setOffers([]);
                 setSelectedItem(null);
                 await fetchDashboard();
             } else if (action === "decline" && selectedItem) {
-                // Refresh offers for declined item
                 const refreshed = await api.get<Offer[]>(`/api/auth/items/${selectedItem}/offers`);
                 setOffers(refreshed.data);
                 await fetchDashboard();

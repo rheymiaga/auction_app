@@ -133,7 +133,7 @@ router.post(
     }
 );
 
-// Get item image (optimized)
+// Get item image 
 router.get("/items/:id/image", async (req: Request, res: Response) => {
     try {
         const id = Number(req.params.id);
@@ -152,7 +152,6 @@ router.get("/items/:id/image", async (req: Request, res: Response) => {
 
         const { img_data, img_mime } = result.rows[0];
 
-        // Set proper headers
         res.set("Content-Type", img_mime || "application/octet-stream");
         res.set("Cache-Control", "public, max-age=3600");
 
@@ -394,7 +393,6 @@ router.get("/my-offers", protect, async (req: Request, res: Response) => {
     }
 });
 
-// Delete an offer made by the logged-in user
 router.delete("/my-offers/:id", protect, async (req: Request, res: Response) => {
     try {
         const userId = (req as any).user.id;
@@ -404,7 +402,6 @@ router.delete("/my-offers/:id", protect, async (req: Request, res: Response) => 
             return res.status(400).json({ message: "Invalid offer ID" });
         }
 
-        // Check if the offer exists and belongs to the logged-in user
         const offerResult = await pool.query(
             "SELECT * FROM offers WHERE id = $1 AND buyer_id = $2",
             [offerId, userId]
@@ -415,8 +412,6 @@ router.delete("/my-offers/:id", protect, async (req: Request, res: Response) => 
         }
 
         const offer = offerResult.rows[0];
-
-        // Delete the offer
         await pool.query("DELETE FROM offers WHERE id = $1 AND buyer_id = $2", [offerId, userId]);
 
         res.json({ message: "Offer deleted successfully", deletedOffer: offer });
